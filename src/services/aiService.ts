@@ -8,7 +8,7 @@ interface AIResponse {
 }
 
 export const analyzeSkin = async (imageUrl: string): Promise<AIResponse> => {
-  const aiApiUrl = "http://localhost:5001/analyze"; // Replace if deployed
+  const aiApiUrl = "https://flask-ai-api-production.up.railway.app/analyze"; // Replace if deployed
 
   const response = await axios.post<AIResponse>("http://localhost:5001/analyze", {
     imageUrl,

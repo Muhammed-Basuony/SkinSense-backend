@@ -5,6 +5,9 @@ import { DynamoDBClient, PutItemCommand, QueryCommand } from "@aws-sdk/client-dy
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 const TABLE_NAME = "ChatbotHistory";
 
+// ✅ Replace with your deployed chatbot URL
+const CHATBOT_API_URL = "https://flask-chatbot-api-production.up.railway.app/chat";
+
 interface ChatbotResponse {
   reply: string;
 }
@@ -12,7 +15,7 @@ interface ChatbotResponse {
 export class ChatbotService {
   async askQuestion(userId: string, message: string): Promise<ChatbotResponse> {
     try {
-      const aiRes = await axios.post<ChatbotResponse>("http://localhost:5002/chat", {
+      const aiRes = await axios.post<ChatbotResponse>(CHATBOT_API_URL, {
         message,
       });
 
@@ -59,4 +62,5 @@ export class ChatbotService {
     );
   }
 }
+
 
