@@ -19,7 +19,8 @@ export class SkinScanService {
 
     try {
       // Step 1: Call the AI Flask API
-      const aiApiUrl = "http://127.0.0.1:5001/analyze"; // Replace with your deployed Flask API URL
+      const aiApiUrl = "https://flask-ai-api-production.up.railway.app/analyze";
+ // Replace with your deployed Flask API URL
       const response = await axios.post<AIResponse>(aiApiUrl, {
         imageUrl: scanData.imageUrl,
       });
