@@ -1,3 +1,4 @@
+// src/routes/authRoutes.ts
 import express, { Request, Response, NextFunction } from 'express';
 import { AuthController } from '../controllers/authController';
 import { authenticateToken, AuthRequest } from '../middleware/authMiddleware';
@@ -19,6 +20,13 @@ const handleValidation = (req: Request, res: Response, next: NextFunction): void
   }
   next();
 };
+
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentication endpoints
+ */
 
 /**
  * @swagger
@@ -49,14 +57,9 @@ const handleValidation = (req: Request, res: Response, next: NextFunction): void
  *       400:
  *         description: Validation error
  */
-router.post(
-  '/signup',
-  signupValidation,
-  handleValidation,
-  (req: Request, res: Response) => {
-    authController.signup(req, res);
-  }
-);
+router.post('/signup', signupValidation, handleValidation, (req: Request, res: Response) => {
+  authController.signup(req, res);
+});
 
 /**
  * @swagger
@@ -84,20 +87,15 @@ router.post(
  *       401:
  *         description: Invalid credentials
  */
-router.post(
-  '/login',
-  loginValidation,
-  handleValidation,
-  (req: Request, res: Response) => {
-    authController.login(req, res);
-  }
-);
+router.post('/login', loginValidation, handleValidation, (req: Request, res: Response) => {
+  authController.login(req, res);
+});
 
 /**
  * @swagger
  * /api/auth/reset-password:
  *   post:
- *     summary: Reset password for a user
+ *     summary: Reset password for a user using token
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -107,26 +105,60 @@ router.post(
  *             type: object
  *             required:
  *               - email
+ *               - token
  *               - newPassword
+ *               - confirmPassword
  *             properties:
  *               email:
  *                 type: string
+ *               token:
+ *                 type: string
  *               newPassword:
+ *                 type: string
+ *               confirmPassword:
  *                 type: string
  *     responses:
  *       200:
  *         description: Password reset successful
- *       404:
- *         description: User not found
+ *       400:
+ *         description: Invalid token or user not found
  */
-router.post(
-  '/reset-password',
-  resetPasswordValidation,
-  handleValidation,
-  (req: Request, res: Response) => {
-    authController.resetPassword(req, res);
+router.post('/reset-password', resetPasswordValidation, handleValidation, (req: Request, res: Response) => {
+  authController.resetPassword(req, res);
+});
+
+/**
+ * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Send password reset email to user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Reset password email sent
+ *       400:
+ *         description: User not found or email error
+ */
+router.post('/forgot-password', async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const message = await authController.forgotPassword(email);
+    res.status(200).json({ message });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
   }
-);
+});
 
 /**
  * @swagger
@@ -142,15 +174,11 @@ router.post(
  *       401:
  *         description: Unauthorized
  */
-router.get(
-  '/protected',
-  authenticateToken,
-  (req: AuthRequest, res: Response) => {
-    res.json({
-      message: 'You are authorized!',
-      user: req.user,
-    });
-  }
-);
+router.get('/protected', authenticateToken, (req: AuthRequest, res: Response) => {
+  res.json({
+    message: 'You are authorized!',
+    user: req.user,
+  });
+});
 
 export default router;

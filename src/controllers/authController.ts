@@ -27,15 +27,25 @@ export class AuthController {
     }
   }
 
+  async forgotPassword(email: string) {
+    return await authService.forgotPassword(email);
+  }
+  
+
   async resetPassword(req: Request, res: Response) {
     try {
-      const result = await authService.resetPassword(req.body);
-      logger.info(`🔁 Password reset for: ${req.body.email}`);
-      return res.status(200).json({ message: 'Password reset successful', result });
+      const { email, token, newPassword, confirmPassword } = req.body;
+  
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ error: "Passwords do not match" });
+      }
+  
+      const result = await authService.resetPassword({ email, token, newPassword });
+      return res.status(200).json({ message: "Password reset successful", result });
     } catch (error: any) {
-      logger.error(`❌ Password reset failed: ${error.message}`);
       return res.status(400).json({ error: error.message });
     }
   }
+  
 }
 
