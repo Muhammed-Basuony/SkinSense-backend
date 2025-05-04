@@ -206,3 +206,26 @@
 [2025-04-25T07:12:20.942Z] INFO: ::1 - - [25/Apr/2025:07:12:20 +0000] "GET /api-docs/swagger-ui-standalone-preset.js HTTP/1.1" 304 - "http://localhost:5005/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0"
 [2025-04-25T07:12:20.943Z] INFO: ::1 - - [25/Apr/2025:07:12:20 +0000] "GET /api-docs/swagger-ui.css HTTP/1.1" 304 - "http://localhost:5005/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0"
 [2025-04-25T07:12:21.021Z] INFO: ::1 - - [25/Apr/2025:07:12:21 +0000] "GET /api-docs/favicon-32x32.png HTTP/1.1" 304 - "http://localhost:5005/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0"
+[2025-05-04T14:41:46.223Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:41:46 +0000] "GET /api-docs/ HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T14:41:46.440Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:41:46 +0000] "GET /api-docs/swagger-ui-init.js HTTP/1.1" 200 8197 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T14:41:46.531Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:41:46 +0000] "GET /api-docs/swagger-ui.css HTTP/1.1" 200 154986 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T14:41:46.701Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:41:46 +0000] "GET /api-docs/swagger-ui-standalone-preset.js HTTP/1.1" 200 229223 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T14:41:47.757Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:41:47 +0000] "GET /api-docs/swagger-ui-bundle.js HTTP/1.1" 200 1468326 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T14:41:48.348Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:41:48 +0000] "GET /api-docs/favicon-32x32.png HTTP/1.1" 200 628 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T14:41:54.888Z] INFO: User logged in: Messi10@example.com
+[2025-05-04T14:41:54.890Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:41:54 +0000] "POST /api/auth/login HTTP/1.1" 200 325 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T14:42:52.607Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:42:52 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T14:49:13.259Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:49:13 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T14:50:49.342Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:50:49 +0000] "POST /api/auth/signup HTTP/1.1" 400 130 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T14:51:01.707Z] INFO: New user signed up: m7ma@example.com
+[2025-05-04T14:51:01.711Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:51:01 +0000] "POST /api/auth/signup HTTP/1.1" 201 311 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T14:51:43.439Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:14:51:43 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T15:02:15.241Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:15:02:15 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T15:15:57.419Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:15:15:57 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T15:25:02.934Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:15:25:02 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T15:30:57.002Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:15:30:57 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T15:46:40.129Z] WARN: Login failed: Invalid email or password
+[2025-05-04T15:46:40.145Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:15:46:40 +0000] "POST /api/auth/login HTTP/1.1" 401 37 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T15:47:00.547Z] INFO: User logged in: Messi10@example.com
+[2025-05-04T15:47:00.548Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:15:47:00 +0000] "POST /api/auth/login HTTP/1.1" 200 325 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T15:47:51.261Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:15:47:51 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
