@@ -27,6 +27,8 @@ const router = express.Router();
  *         description: Chatbot reply
  *       400:
  *         description: Bad request
+ *       401:
+ *         description: Unauthorized
  *       500:
  *         description: Server error
  */

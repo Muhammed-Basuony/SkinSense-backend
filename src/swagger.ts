@@ -1,4 +1,4 @@
-// src/swagger.ts
+
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { Express } from "express";
@@ -17,7 +17,7 @@ const options = {
       },
     ],
   },
-  apis: ["./src/routes/*.ts"],
+  apis: ["./src/routes/**/*.ts"],
 };
 
 const specs = swaggerJsDoc(options);

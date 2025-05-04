@@ -1,4 +1,4 @@
-// src/models/User.models.ts
+
 
 export interface User {
   userId: string;

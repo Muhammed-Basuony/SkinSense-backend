@@ -1,4 +1,4 @@
-// src/routes/authRoutes.ts
+
 import express, { Request, Response, NextFunction } from 'express';
 import { AuthController } from '../controllers/authController';
 import { authenticateToken, AuthRequest } from '../middleware/authMiddleware';

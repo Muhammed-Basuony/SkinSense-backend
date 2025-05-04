@@ -1,13 +1,12 @@
-// src/services/authService.ts
-import { generateToken } from "../utils/jwt";
 import { DynamoDBClient, PutItemCommand, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import bcrypt from "bcryptjs";
-import { User, generateUserId } from "../models/User.models";
 import jwt from "jsonwebtoken";
 import { transporter } from "../utils/mailer";
+import { User, generateUserId } from "../models/User.models";
 
 const dynamo = new DynamoDBClient({ region: "eu-north-1" });
 const USERS_TABLE = "SkinSenseUsers";
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret";
 
 export class AuthService {
   async signup(data: { name: string; email: string; password: string }) {
@@ -40,7 +39,7 @@ export class AuthService {
 
     await dynamo.send(putCommand);
 
-    const token = generateToken({ userId, email });
+    const token = jwt.sign({ userId, email }, JWT_SECRET, { expiresIn: "2h" });
 
     return {
       token,
@@ -58,7 +57,7 @@ export class AuthService {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new Error("Invalid email or password");
 
-    const token = generateToken({ userId: user.userId, email: user.email });
+    const token = jwt.sign({ userId: user.userId, email: user.email }, JWT_SECRET, { expiresIn: "2h" });
 
     return {
       token,
@@ -74,13 +73,12 @@ export class AuthService {
 
     const token = jwt.sign(
       { userId: user.userId, email: user.email },
-      process.env.JWT_SECRET!,
+      JWT_SECRET,
       { expiresIn: "15m" }
     );
 
-    const resetLink = `http://localhost:3000/reset-password?token=${token}&email=${email}`; // replace with your frontend URL
+    const resetLink = `http://localhost:3000/reset-password?token=${token}&email=${email}`;
 
-    // Send email via Mailtrap transporter
     await transporter.sendMail({
       from: '"SkinSense Support" <support@skinsense.app>',
       to: email,
@@ -99,11 +97,9 @@ export class AuthService {
   async resetPassword(data: { email: string; token: string; newPassword: string }) {
     const { email, token, newPassword } = data;
 
-    const secret = process.env.JWT_SECRET || "your-secret";
-
     let decoded: any;
     try {
-      decoded = jwt.verify(token, secret);
+      decoded = jwt.verify(token, JWT_SECRET);
       if (decoded.email !== email) throw new Error("Token does not match the provided email");
     } catch (err: any) {
       if (err.name === "TokenExpiredError") {
@@ -111,7 +107,6 @@ export class AuthService {
       }
       throw new Error("Invalid or expired token.");
     }
-    
 
     const user = await this.getUserByEmail(email);
     if (!user) throw new Error("User not found");

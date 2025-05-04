@@ -1,3 +1,4 @@
+
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -13,6 +14,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
   const token = authHeader?.split(' ')[1];
 
   if (!token) {
+    console.warn("No token provided");
     res.status(401).json({ error: "No token provided" });
     return;
   }
@@ -20,9 +22,12 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
   try {
     const secret = process.env.JWT_SECRET || "your-secret";
     const decoded = jwt.verify(token, secret);
+    console.log("Token decoded:", decoded);
     req.user = decoded;
     next();
-  } catch (err) {
+  } catch (err: any) {
+    console.error("Token validation failed:", err.message);
     res.status(403).json({ error: "Invalid or expired token" });
   }
 };
+
