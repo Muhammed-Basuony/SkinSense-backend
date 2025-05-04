@@ -1,8 +1,18 @@
+// src/routes/profileRoutes.ts
+
 import express from "express";
 import { authenticateToken } from "../middleware/authMiddleware";
 import { getProfile, updateProfile } from "../controllers/profileController";
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   name: User Profile
+ *   description: User profile management
+ */
+
 /**
  * @swagger
  * /api/profile:
@@ -26,8 +36,8 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-
 router.get("/", authenticateToken, getProfile);
+
 /**
  * @swagger
  * /api/profile:
@@ -60,52 +70,8 @@ router.get("/", authenticateToken, getProfile);
  *       500:
  *         description: Server error
  */
-
 router.put("/", authenticateToken, updateProfile);
 
 export default router;
-/**
- * @swagger
- * components:
- *   schemas:
- *     UserProfile:
- *       type: object
- *       properties:
- *         userId:
- *           type: string
- *           example: user_abcd1234
- *         name:
- *           type: string
- *           example: John Doe
- *         email:
- *           type: string
- *           example: john@example.com
- *         age:
- *           type: number
- *           example: 28
- *         gender:
- *           type: string
- *           example: male
- *         bloodType:
- *           type: string
- *           example: O+
- *         phone:
- *           type: string
- *           example: "+201001234567"
- *         profilePhotoUrl:
- *           type: string
- *           example: https://example.com/photo.jpg
- *         location:
- *           type: object
- *           properties:
- *             latitude:
- *               type: number
- *               example: 30.0444
- *             longitude:
- *               type: number
- *               example: 31.2357
- *             address:
- *               type: string
- *               example: Giza, Egypt
- */
+
 
