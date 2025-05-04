@@ -6,6 +6,16 @@ export interface User {
   email: string;
   password: string;
   createdAt: string;
+  age?: number;
+  gender?: string;
+  bloodType?: string;
+  phone?: string;
+  profilePhotoUrl?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+    address?: string;
+  };
 }
 
 export const generateUserId = (): string => {

@@ -7,18 +7,26 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = "openai/gpt-3.5-turbo";
 
-export const askChatbot = async (req: AuthRequest, res: Response) => {
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+interface OpenRouterResponse {
+  choices: Array<{
+    message: ChatMessage;
+  }>;
+}
+
+export const askChatbot = async (req: AuthRequest, res: Response): Promise<void> => {
   const { message } = req.body;
   const userId = req.user?.userId;
 
   if (!message || !userId) {
-    return res.status(400).json({ error: "Message and userId are required" });
+    res.status(400).json({ error: "Message and userId are required" });
+    return;
   }
 
-  interface OpenRouterResponse {
-    choices: { message: { content: string } }[];
-  }
-  
   try {
     const response = await axios.post<OpenRouterResponse>(
       OPENROUTER_URL,
@@ -33,21 +41,23 @@ export const askChatbot = async (req: AuthRequest, res: Response) => {
         },
       }
     );
-  
-    const reply = response.data.choices?.[0]?.message?.content || "No reply.";
-  
+
+    const reply = response.data?.choices?.[0]?.message?.content || "No reply.";
+
     await saveChatToDynamoDB(userId, message, reply);
     res.status(200).json({ reply });
   } catch (err: any) {
     console.error("Chatbot error:", err?.response?.data || err.message);
     res.status(500).json({ error: "Something went wrong with the chatbot" });
   }
-  
 };
 
-export const getChatHistory = async (req: AuthRequest, res: Response) => {
+export const getChatHistory = async (req: AuthRequest, res: Response): Promise<void> => {
   const userId = req.user?.userId;
-  if (!userId) return res.status(401).json({ error: "Unauthorized" });
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
 
   try {
     const history = await getChatHistoryFromDynamoDB(userId);
@@ -57,4 +67,6 @@ export const getChatHistory = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ error: "Unable to retrieve chat history" });
   }
 };
+
+ 
 
