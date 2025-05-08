@@ -40,8 +40,8 @@ export const askChatbot = async (req: AuthRequest, res: Response): Promise<void>
       },
     );
 
-    const reply = response.data?.choices?.[0]?.message?.content || "No reply.";
-
+    // const reply = response.data?.choices?.[0]?.message?.content || "No reply.";
+    const reply = response.choices[0].message.content || "No reply.";
     await saveChatToDynamoDB(userId, message, reply);
     // const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     //   method: 'POST',
