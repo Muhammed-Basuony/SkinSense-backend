@@ -20,7 +20,7 @@ export const startGroupChat = async (req: AuthRequest, res: Response): Promise<v
   const participants = [...new Set([userId, ...participantIds])];
   const result = await createGroupChat({
     groupId: chatId,
-    name: "Dermatology Support Group",
+    name: "SkinSense Support Group",
     members: participants,
     createdAt: new Date().toISOString(),
   });

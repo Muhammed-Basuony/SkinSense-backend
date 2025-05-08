@@ -1,17 +1,10 @@
 import { Request, Response } from "express";
-import axios from "axios";
 import { AuthRequest } from "../middleware/authMiddleware";
 import { saveChatToDynamoDB, getChatHistoryFromDynamoDB } from "../utils/dynamoUtils";
+
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "openai/gpt-3.5-turbo";
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: OPENROUTER_API_KEY,
-  
-});
+const MODEL = "openai/gpt-4o-mini";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -34,33 +27,27 @@ export const askChatbot = async (req: AuthRequest, res: Response): Promise<void>
   }
 
   try {
-    const response = await openai.chat.completions.create({
-        model: MODEL,
-        messages: [{ role: "user", content: message }],
+    const response = await fetch(OPENROUTER_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          {
+            role: "user",
+            content: message,
+          },
+        ],
+      }),
+    });
 
-    // const reply = response.data?.choices?.[0]?.message?.content || "No reply.";
-    const reply = response.choices[0].message.content || "No reply.";
+    const data: OpenRouterResponse = await response.json();
+    const reply = data.choices?.[0]?.message?.content || "No reply from chatbot.";
+
     await saveChatToDynamoDB(userId, message, reply);
-    // const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    //   method: 'POST',
-    //   headers: {
-    //     Authorization: 'Bearer ' + OPENROUTER_API_KEY,
-    
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     model: 'openai/gpt-4o-mini',
-    //     messages: [
-    //       {
-    //         role: 'user',
-    //         content: 'What is the meaning of life?',
-    //       },
-    //     ],
-    //   }),
-    // });
-
     res.status(200).json({ reply });
   } catch (err: any) {
     console.error("Chatbot error:", err?.response?.data || err.message);
@@ -83,6 +70,5 @@ export const getChatHistory = async (req: AuthRequest, res: Response): Promise<v
     res.status(500).json({ error: "Unable to retrieve chat history" });
   }
 };
-
  
 
