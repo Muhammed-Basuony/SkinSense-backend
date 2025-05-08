@@ -76,7 +76,7 @@ const options = {
       },
     ],
   },
-  apis: ["./src/routes/**/*.ts"], // Pull Swagger docs from all routes
+  apis: ["./src/routes/**/*.ts"], 
 };
 
 const specs = swaggerJsDoc(options);
