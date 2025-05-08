@@ -6,6 +6,8 @@ import { setupSwagger } from './swagger';
 import logger from './utils/logger';
 import ChatbotRoutes from "./routes/chatbotRoutes";
 import profileRoutes from "./routes/profileRoutes";
+import groupChatRoutes from "./routes/groupChatRoutes";
+
 
 dotenv.config();
 
@@ -21,7 +23,7 @@ app.use(
   })
 );
 
-
+app.use("/api/group-chat", groupChatRoutes);
 app.use('/api/auth', AuthRoutes);
 app.use('/api/chatbot', ChatbotRoutes); 
 app.use("/api/profile", profileRoutes);

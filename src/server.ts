@@ -12,16 +12,16 @@ import groupChatRoutes from "./routes/groupChatRoutes";
 
 const PORT = process.env.PORT || 5000;
 
-// Register routes
+
 app.use("/api/group-chat", groupChatRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/profile', profileRoutes);
 
-// Setup Swagger docs
+
 setupSwagger(app);
 
-// Catch-all for unmatched routes
+
 app.use('*', (req, res) => {
   console.warn(`Unmatched route: ${req.method} ${req.originalUrl}`);
   res.status(404).json({ error: 'Requested resource not found' });
