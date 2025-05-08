@@ -229,3 +229,47 @@
 [2025-05-04T15:47:00.547Z] INFO: User logged in: Messi10@example.com
 [2025-05-04T15:47:00.548Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:15:47:00 +0000] "POST /api/auth/login HTTP/1.1" 200 325 "-" "PostmanRuntime/7.39.1"
 [2025-05-04T15:47:51.261Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:15:47:51 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T21:34:12.462Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:34:12 +0000] "GET /api-docs/ HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T21:34:12.562Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:34:12 +0000] "GET /api-docs/swagger-ui.css HTTP/1.1" 304 - "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T21:34:12.564Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:34:12 +0000] "GET /api-docs/swagger-ui-bundle.js HTTP/1.1" 304 - "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T21:34:12.649Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:34:12 +0000] "GET /api-docs/swagger-ui-standalone-preset.js HTTP/1.1" 304 - "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T21:34:12.651Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:34:12 +0000] "GET /api-docs/swagger-ui-init.js HTTP/1.1" 200 11996 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T21:34:12.808Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:34:12 +0000] "GET /api-docs/favicon-32x32.png HTTP/1.1" 304 - "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T21:35:33.338Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:35:33 +0000] "PUT /api/profile HTTP/1.1" 401 29 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-04T21:39:37.310Z] INFO: User logged in: Messi10@example.com
+[2025-05-04T21:39:37.311Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:39:37 +0000] "POST /api/auth/login HTTP/1.1" 200 325 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T21:41:01.208Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:41:01 +0000] "GET /api/profile HTTP/1.1" 401 29 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T21:41:08.613Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:41:08 +0000] "GET /api/profile HTTP/1.1" 200 124 "-" "PostmanRuntime/7.39.1"
+[2025-05-04T21:42:28.378Z] INFO: ::ffff:156.207.145.14 - - [04/May/2025:21:42:28 +0000] "PUT /api/profile HTTP/1.1" 200 431 "-" "PostmanRuntime/7.39.1"
+[2025-05-05T01:15:01.976Z] INFO: ::ffff:206.168.34.94 - - [05/May/2025:01:15:01 +0000] "GET / HTTP/1.1" 200 32 "-" "-"
+[2025-05-08T12:57:22.672Z] INFO: ::ffff:154.177.170.43 - - [08/May/2025:12:57:22 +0000] "GET / HTTP/1.1" 200 32 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-08T12:57:22.941Z] WARN: Unmatched route: GET /favicon.ico
+[2025-05-08T12:57:22.943Z] INFO: ::ffff:154.177.170.43 - - [08/May/2025:12:57:22 +0000] "GET /favicon.ico HTTP/1.1" 404 40 "http://13.48.138.216:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-08T13:11:23.866Z] WARN: Unmatched route: GET /robots.txt
+[2025-05-08T13:11:23.867Z] INFO: ::ffff:52.167.144.66 - - [08/May/2025:13:11:23 +0000] "GET /robots.txt HTTP/1.1" 404 40 "-" "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/116.0.1938.76 Safari/537.36"
+[2025-05-08T13:11:31.902Z] INFO: ::ffff:40.77.167.41 - - [08/May/2025:13:11:31 +0000] "GET / HTTP/1.1" 200 32 "-" "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm) Chrome/116.0.1938.76 Safari/537.36"
+[2025-05-08T13:31:45.918Z] INFO: ::ffff:154.177.195.151 - - [08/May/2025:13:31:45 +0000] "GET /api-docs HTTP/1.1" 301 158 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-08T13:31:46.021Z] INFO: ::ffff:154.177.195.151 - - [08/May/2025:13:31:46 +0000] "GET /api-docs/ HTTP/1.1" 200 3106 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-08T13:31:46.244Z] INFO: ::ffff:154.177.195.151 - - [08/May/2025:13:31:46 +0000] "GET /api-docs/swagger-ui.css HTTP/1.1" 200 154986 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-08T13:31:46.454Z] INFO: ::ffff:154.177.197.193 - - [08/May/2025:13:31:46 +0000] "GET /api-docs/swagger-ui-standalone-preset.js HTTP/1.1" 200 229223 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-08T13:31:46.487Z] INFO: ::ffff:154.177.170.43 - - [08/May/2025:13:31:46 +0000] "GET /api-docs/swagger-ui-init.js HTTP/1.1" 200 11996 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-08T13:31:46.580Z] INFO: ::ffff:154.177.140.239 - - [08/May/2025:13:31:46 +0000] "GET /api-docs/swagger-ui-bundle.js HTTP/1.1" 200 1468326 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-08T13:31:47.516Z] INFO: ::ffff:154.177.140.239 - - [08/May/2025:13:31:47 +0000] "GET /api-docs/favicon-32x32.png HTTP/1.1" 200 628 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-08T13:58:13.263Z] WARN: Unmatched route: PUT /api/auth/login
+[2025-05-08T13:58:13.264Z] INFO: ::ffff:154.177.170.43 - - [08/May/2025:13:58:13 +0000] "PUT /api/auth/login HTTP/1.1" 404 40 "-" "PostmanRuntime/7.39.1"
+[2025-05-08T13:58:43.301Z] INFO: ::ffff:46.101.104.195 - - [08/May/2025:13:58:43 +0000] "GET / HTTP/1.1" 200 32 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+[2025-05-08T13:58:43.346Z] WARN: Unmatched route: GET /favicon.ico
+[2025-05-08T13:58:43.347Z] INFO: ::ffff:46.101.104.195 - - [08/May/2025:13:58:43 +0000] "GET /favicon.ico HTTP/1.1" 404 40 "http://13.48.138.216:5000/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+[2025-05-08T14:05:02.363Z] INFO: User logged in: Messi10@example.com
+[2025-05-08T14:05:02.364Z] INFO: ::ffff:154.177.170.43 - - [08/May/2025:14:05:02 +0000] "POST /api/auth/login HTTP/1.1" 200 325 "http://13.48.138.216:5000/api-docs/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0"
+[2025-05-08T14:05:13.433Z] INFO: User logged in: Messi10@example.com
+[2025-05-08T14:05:13.435Z] INFO: ::ffff:154.177.170.43 - - [08/May/2025:14:05:13 +0000] "POST /api/auth/login HTTP/1.1" 200 325 "-" "PostmanRuntime/7.39.1"
+[2025-05-08T14:07:35.140Z] INFO: ::ffff:154.177.170.43 - - [08/May/2025:14:07:35 +0000] "POST /api/chatbot/chat HTTP/1.1" 401 29 "-" "PostmanRuntime/7.39.1"
+[2025-05-08T14:07:43.926Z] INFO: ::ffff:154.177.195.151 - - [08/May/2025:14:07:43 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-08T14:11:08.253Z] WARN: Unmatched route: PUT /api/auth/login
+[2025-05-08T14:11:08.254Z] INFO: ::ffff:154.177.170.43 - - [08/May/2025:14:11:08 +0000] "PUT /api/auth/login HTTP/1.1" 404 40 "-" "PostmanRuntime/7.39.1"
+[2025-05-08T14:11:40.894Z] INFO: User logged in: Messi10@example.com
+[2025-05-08T14:11:40.895Z] INFO: ::ffff:154.177.197.193 - - [08/May/2025:14:11:40 +0000] "POST /api/auth/login HTTP/1.1" 200 325 "-" "PostmanRuntime/7.39.1"
+[2025-05-08T14:12:37.616Z] INFO: ::ffff:154.177.170.43 - - [08/May/2025:14:12:37 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-08T14:26:18.230Z] INFO: ::ffff:154.177.195.151 - - [08/May/2025:14:26:18 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
+[2025-05-08T14:30:38.238Z] INFO: ::ffff:154.177.140.239 - - [08/May/2025:14:30:38 +0000] "POST /api/chatbot/chat HTTP/1.1" 500 49 "-" "PostmanRuntime/7.39.1"
