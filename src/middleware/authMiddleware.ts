@@ -21,6 +21,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
 
   try {
     const secret = process.env.JWT_SECRET || "your-secret";
+    console.log("JWT_SECRET being used:", secret);
     const decoded = jwt.verify(token, secret);
     console.log("Token decoded:", decoded);
     req.user = decoded;
