@@ -13,9 +13,9 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/chat:
+ * /api/chatbot/chat:
  *   post:
- *     summary: Ask the chatbot a dermatology-related question
+ *     summary: Send a message to the chatbot
  *     tags: [Chatbot]
  *     security:
  *       - bearerAuth: []
@@ -30,8 +30,7 @@ const router = express.Router();
  *             properties:
  *               message:
  *                 type: string
- *                 description: The question or message to send to the chatbot
- *                 example: "What should I do about dry skin?"
+ *                 example: "What should I do for dry skin?"
  *     responses:
  *       200:
  *         description: Chatbot replied successfully
@@ -42,7 +41,7 @@ const router = express.Router();
  *               properties:
  *                 reply:
  *                   type: string
- *                   example: "You should use a moisturizer with hyaluronic acid twice a day."
+ *                   example: "Use a gentle moisturizer twice a day."
  *       400:
  *         description: Message or user ID missing
  *       401:
@@ -50,6 +49,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
+
 router.post("/chat", authenticateToken, async (req: AuthRequest, res: Response) => {
   await askChatbot(req, res);
 });
@@ -58,7 +58,7 @@ router.post("/chat", authenticateToken, async (req: AuthRequest, res: Response) 
  * @swagger
  * /api/chatbot/history:
  *   get:
- *     summary: Retrieve the user's chatbot interaction history
+ *     summary: Retrieve chatbot conversation history
  *     tags: [Chatbot]
  *     security:
  *       - bearerAuth: []
@@ -77,22 +77,19 @@ router.post("/chat", authenticateToken, async (req: AuthRequest, res: Response) 
  *                     properties:
  *                       userId:
  *                         type: string
- *                         example: "user123"
  *                       question:
  *                         type: string
- *                         example: "What can I use for oily skin?"
  *                       reply:
  *                         type: string
- *                         example: "Use a gentle foaming cleanser twice a day."
  *                       timestamp:
  *                         type: string
  *                         format: date-time
- *                         example: "2025-05-08T18:25:00.000Z"
  *       401:
  *         description: Unauthorized
  *       500:
  *         description: Failed to retrieve chat history
  */
+
 router.get("/chatbot/history", authenticateToken, async (req: AuthRequest, res: Response) => {
   await getChatHistory(req, res);
 });
