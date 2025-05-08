@@ -52,7 +52,7 @@ export const getChatMessages = async (groupId: string) => {
     ExpressionAttributeValues: {
       ":groupId": { S: groupId },
     },
-    ScanIndexForward: true, // oldest first
+    ScanIndexForward: true,
   });
 
   const result = await dynamo.send(cmd);
