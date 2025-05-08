@@ -8,13 +8,13 @@ const client = new DynamoDBClient({ region: "eu-north-1" });
 const TABLE_NAME = "ChatHistory"; 
 
 export const saveChatToDynamoDB = async (userId: string, question: string, reply: string) => {
-  const timestamp = Date.now().toString();
+  const timestamp = new Date().toISOString();
 
   const params = {
     TableName: TABLE_NAME,
     Item: {
       userId: { S: userId },
-      timestamp: { N: timestamp },
+      timestamp: { S: timestamp }, 
       question: { S: question },
       reply: { S: reply },
     },
@@ -22,6 +22,7 @@ export const saveChatToDynamoDB = async (userId: string, question: string, reply
 
   await client.send(new PutItemCommand(params));
 };
+
 
 export const getChatHistoryFromDynamoDB = async (userId: string) => {
   const params = {
