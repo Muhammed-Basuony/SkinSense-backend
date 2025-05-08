@@ -2,10 +2,16 @@ import { Request, Response } from "express";
 import axios from "axios";
 import { AuthRequest } from "../middleware/authMiddleware";
 import { saveChatToDynamoDB, getChatHistoryFromDynamoDB } from "../utils/dynamoUtils";
-
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = "openai/gpt-3.5-turbo";
+// import OpenAI from 'openai';
+
+// const openai = new OpenAI({
+//   baseURL: 'https://openrouter.ai/api/v1',
+//   apiKey: OPENROUTER_API_KEY,
+  
+// });
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -28,24 +34,34 @@ export const askChatbot = async (req: AuthRequest, res: Response): Promise<void>
   }
 
   try {
-    const response = await axios.post<OpenRouterResponse>(
-      OPENROUTER_URL,
-      {
-        model: MODEL,
-        messages: [{ role: "user", content: message }],
+    // const response = await openai.chat.completions.create({
+    //     model: MODEL,
+    //     messages: [{ role: "user", content: message }],
+    //   },
+    // );
+
+    //const reply = response.data?.choices?.[0]?.message?.content || "No reply.";
+
+    // await saveChatToDynamoDB(userId, message, reply);
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + OPENROUTER_API_KEY,
+    
+        'Content-Type': 'application/json',
       },
-      {
-        headers: {
-          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+      body: JSON.stringify({
+        model: 'openai/gpt-4o-mini',
+        messages: [
+          {
+            role: 'user',
+            content: 'What is the meaning of life?',
+          },
+        ],
+      }),
+    });
 
-    const reply = response.data?.choices?.[0]?.message?.content || "No reply.";
-
-    await saveChatToDynamoDB(userId, message, reply);
-    res.status(200).json({ reply });
+    res.status(200).json({ response });
   } catch (err: any) {
     console.error("Chatbot error:", err?.response?.data || err.message);
     res.status(500).json({ error: "Something went wrong with the chatbot" });
