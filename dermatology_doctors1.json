@@ -1,0 +1,202 @@
+[
+  {
+    "id":"doc1",
+    "name":"Dr. Ahmed Mansour",
+    "rating":4.5,
+    "phoneNumber":"01158442292",
+    "location":"Cairo",
+    "specialty":"Dermatologist",
+    "biography":"Board-certified dermatologist with 10+ years of experience in treating chronic skin conditions.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc2",
+    "name":"Dr. Sarah ElShamy",
+    "rating":3.9,
+    "phoneNumber":"01255039784",
+    "location":"Alexandria",
+    "specialty":"Dermatologist",
+    "biography":"Consultant in dermatology and venereology with extensive hospital experience.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc3",
+    "name":"Dr. Tarek Nabil",
+    "rating":4.6,
+    "phoneNumber":"01032069225",
+    "location":"Giza",
+    "specialty":"Dermatologist",
+    "biography":"Board-certified dermatologist with 10+ years of experience in treating chronic skin conditions.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc4",
+    "name":"Dr. Mariam Adel",
+    "rating":4.8,
+    "phoneNumber":"01152938487",
+    "location":"Mansoura",
+    "specialty":"Dermatologist",
+    "biography":"Published researcher in dermatopathology and advanced skin imaging.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc5",
+    "name":"Dr. Mostafa Hany",
+    "rating":4.9,
+    "phoneNumber":"01040612351",
+    "location":"Zagazig",
+    "specialty":"Dermatologist",
+    "biography":"Published researcher in dermatopathology and advanced skin imaging.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc6",
+    "name":"Dr. Hossam Khaled",
+    "rating":4.3,
+    "phoneNumber":"01024106844",
+    "location":"Tanta",
+    "specialty":"Dermatologist",
+    "biography":"Consultant in dermatology and venereology with extensive hospital experience.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc7",
+    "name":"Dr. Yasmin Farid",
+    "rating":4.0,
+    "phoneNumber":"01051653809",
+    "location":"Asyut",
+    "specialty":"Dermatologist",
+    "biography":"Published researcher in dermatopathology and advanced skin imaging.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc8",
+    "name":"Dr. Omar ElSayed",
+    "rating":4.1,
+    "phoneNumber":"01136696192",
+    "location":"Fayoum",
+    "specialty":"Dermatologist",
+    "biography":"Expert in hair loss, skin allergies, and pigmentation disorders.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc9",
+    "name":"Dr. Dina Rashed",
+    "rating":4.6,
+    "phoneNumber":"01131106572",
+    "location":"Minya",
+    "specialty":"Dermatologist",
+    "biography":"Consultant in dermatology and venereology with extensive hospital experience.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc10",
+    "name":"Dr. Mahmoud Ashraf",
+    "rating":4.4,
+    "phoneNumber":"01223449297",
+    "location":"Suez",
+    "specialty":"Dermatologist",
+    "biography":"Board-certified dermatologist with 10+ years of experience in treating chronic skin conditions.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc11",
+    "name":"Dr. Layla Sami",
+    "rating":4.9,
+    "phoneNumber":"01169867598",
+    "location":"Ismailia",
+    "specialty":"Dermatologist",
+    "biography":"Specializes in acne treatment, cosmetic dermatology, and laser therapy.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc12",
+    "name":"Dr. Nader Fathy",
+    "rating":3.5,
+    "phoneNumber":"01224157055",
+    "location":"Banha",
+    "specialty":"Dermatologist",
+    "biography":"Consultant in dermatology and venereology with extensive hospital experience.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc13",
+    "name":"Dr. Fatma Hassan",
+    "rating":4.7,
+    "phoneNumber":"01293363931",
+    "location":"Port Said",
+    "specialty":"Dermatologist",
+    "biography":"Expert in hair loss, skin allergies, and pigmentation disorders.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc14",
+    "name":"Dr. Karim Emad",
+    "rating":4.8,
+    "phoneNumber":"01074557690",
+    "location":"Damietta",
+    "specialty":"Dermatologist",
+    "biography":"Board-certified dermatologist with 10+ years of experience in treating chronic skin conditions.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc15",
+    "name":"Dr. Reham Youssef",
+    "rating":4.6,
+    "phoneNumber":"01077669307",
+    "location":"Qena",
+    "specialty":"Dermatologist",
+    "biography":"Board-certified dermatologist with 10+ years of experience in treating chronic skin conditions.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc16",
+    "name":"Dr. Amr Galal",
+    "rating":4.7,
+    "phoneNumber":"01244629309",
+    "location":"Sohag",
+    "specialty":"Dermatologist",
+    "biography":"Published researcher in dermatopathology and advanced skin imaging.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc17",
+    "name":"Dr. Eman Nasr",
+    "rating":4.0,
+    "phoneNumber":"01192288917",
+    "location":"Luxor",
+    "specialty":"Dermatologist",
+    "biography":"Expert in hair loss, skin allergies, and pigmentation disorders.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc18",
+    "name":"Dr. Nour Eldin",
+    "rating":4.0,
+    "phoneNumber":"01141537893",
+    "location":"Beni Suef",
+    "specialty":"Dermatologist",
+    "biography":"Consultant in dermatology and venereology with extensive hospital experience.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc19",
+    "name":"Dr. Sherif Hegazy",
+    "rating":4.9,
+    "phoneNumber":"01270311330",
+    "location":"Hurghada",
+    "specialty":"Dermatologist",
+    "biography":"Board-certified dermatologist with 10+ years of experience in treating chronic skin conditions.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  },
+  {
+    "id":"doc20",
+    "name":"Dr. Heba ElNaggar",
+    "rating":4.3,
+    "phoneNumber":"01260314191",
+    "location":"Sharm El Sheikh",
+    "specialty":"Dermatologist",
+    "biography":"Published researcher in dermatopathology and advanced skin imaging.",
+    "photoUrl":"https:\/\/example.com\/doctor.jpg"
+  }
+]

@@ -25,7 +25,9 @@ export const getDoctorById = async (req: Request, res: Response): Promise<void> 
   try {
     const result = await client.send(new GetItemCommand({
       TableName: DOCTOR_TABLE,
-      Key: marshall({ id }),
+      Key: {
+        id: { S: id }
+      },
     }));
 
     if (!result.Item) {
