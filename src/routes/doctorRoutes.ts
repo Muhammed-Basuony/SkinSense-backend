@@ -19,9 +19,9 @@ router.get("/", listDoctors);
 
 /**
  * @swagger
- * /api/doctors/{id}:
+ * /api/doctors/{id}/{name}:
  *   get:
- *     summary: Get full profile of a doctor by ID
+ *     summary: Get full profile of a doctor by ID and Name
  *     tags: [Doctors]
  *     parameters:
  *       - name: id
@@ -30,14 +30,22 @@ router.get("/", listDoctors);
  *         schema:
  *           type: string
  *         description: The doctor ID
+ *       - name: name
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The doctor name (URL-encoded if it has spaces)
  *     responses:
  *       200:
  *         description: Doctor profile
+ *       400:
+ *         description: Missing id or name
  *       404:
  *         description: Doctor not found
  *       500:
  *         description: Server error
  */
-router.get("/:id", getDoctorById);
+router.get("/:id/:name", getDoctorById);
 
 export default router;
