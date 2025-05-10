@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { transporter } from "../utils/mailer";
 import { User, generateUserId } from "../models/User.models";
+import dotenv from "dotenv";
+dotenv.config();
 
 const dynamo = new DynamoDBClient({ region: "eu-north-1" });
 const USERS_TABLE = "SkinSenseUsers";
@@ -77,7 +79,7 @@ export class AuthService {
       { expiresIn: "15m" }
     );
 
-    const resetLink = `http://localhost:3000/reset-password?token=${token}&email=${email}`;
+    const resetLink = `${process.env.FRONTEND_RESET_URL}?token=${token}&email=${email}`;
 
     await transporter.sendMail({
       from: '"SkinSense Support" <support@skinsense.app>',
