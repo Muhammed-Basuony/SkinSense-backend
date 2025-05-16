@@ -8,6 +8,7 @@ import ChatbotRoutes from "./routes/chatbotRoutes";
 import profileRoutes from "./routes/profileRoutes";
 import groupChatRoutes from "./routes/groupChatRoutes";
 import doctorRoutes from "./routes/doctorRoutes";
+import cors from "cors";
 
 
 
@@ -30,6 +31,7 @@ app.use('/api/auth', AuthRoutes);
 app.use('/api/chatbot', ChatbotRoutes); 
 app.use("/api/profile", profileRoutes);
 app.use("/api/doctors", doctorRoutes);
+app.use(cors());
 
 
 
