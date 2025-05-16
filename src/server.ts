@@ -11,7 +11,7 @@ import { setupSwagger } from './swagger';
 import groupChatRoutes from "./routes/groupChatRoutes";
 import doctorRoutes from "./routes/doctorRoutes";
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 80;
 
 
 app.use("/api/group-chat", groupChatRoutes);
