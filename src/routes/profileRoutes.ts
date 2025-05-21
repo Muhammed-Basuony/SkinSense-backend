@@ -1,8 +1,8 @@
-// src/routes/profileRoutes.ts
-
 import express from "express";
 import { authenticateToken } from "../middleware/authMiddleware";
-import { getProfile, updateProfile } from "../controllers/profileController";
+import { getProfile, updateProfile, updateProfilePhoto } from "../controllers/profileController";
+import multer from "multer";
+import path from "path";
 
 const router = express.Router();
 
@@ -12,6 +12,22 @@ const router = express.Router();
  *   name: User Profile
  *   description: User profile management
  */
+
+// ==========================
+// Multer config for photo upload
+// ==========================
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/profile_photos");
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const name = `photo-${Date.now()}${ext}`;
+    cb(null, name);
+  },
+});
+
+const upload = multer({ storage });
 
 /**
  * @swagger
@@ -72,6 +88,32 @@ router.get("/", authenticateToken, getProfile);
  */
 router.put("/", authenticateToken, updateProfile);
 
+/**
+ * @swagger
+ * /api/profile/upload-photo:
+ *   post:
+ *     summary: Upload user profile photo
+ *     tags: [User Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               photo:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Photo uploaded and saved
+ *       400:
+ *         description: No photo uploaded
+ *       500:
+ *         description: Server error
+ */
+router.post("/upload-photo", authenticateToken, upload.single("photo"), updateProfilePhoto);
+
 export default router;
-
-

@@ -1,4 +1,3 @@
-
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -6,7 +5,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export interface AuthRequest extends Request {
-  user?: any;
+  user?: {
+    email: string;
+    userId: string;
+  };
+  file?: Express.Multer.File; 
 }
 
 export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction): void => {
@@ -22,8 +25,10 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
   try {
     const secret = process.env.JWT_SECRET || "your-secret";
     console.log("JWT_SECRET being used:", secret);
-    const decoded = jwt.verify(token, secret);
+
+    const decoded = jwt.verify(token, secret) as { email: string; userId: string };
     console.log("Token decoded:", decoded);
+
     req.user = decoded;
     next();
   } catch (err: any) {
@@ -31,4 +36,5 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
     res.status(403).json({ error: "Invalid or expired token" });
   }
 };
+
 

@@ -15,6 +15,7 @@ export interface User {
     latitude: number;
     longitude: number;
     address?: string;
+    photoUrl?: string;
   };
 }
 

@@ -3,13 +3,6 @@ import { AuthRequest } from "../middleware/authMiddleware";
 import { getUserByEmail, updateUserProfile } from "../utils/userUtils";
 
 /**
- * Extend the Multer File type to include S3 'location' field.
- */
-interface S3File extends Express.Multer.File {
-  location: string;
-}
-
-/**
  * Get the authenticated user's profile (excluding password)
  */
 export const getProfile = async (req: AuthRequest, res: Response): Promise<void> => {
@@ -35,7 +28,7 @@ export const getProfile = async (req: AuthRequest, res: Response): Promise<void>
 };
 
 /**
- * Update the authenticated user's profile (name, phone, etc.)
+ * Update the authenticated user's profile
  */
 export const updateProfile = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -48,10 +41,7 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
     const updates = req.body;
     const updated = await updateUserProfile(email, updates);
 
-    res.status(200).json({
-      message: "Profile updated successfully",
-      profile: updated,
-    });
+    res.status(200).json({ message: "Profile updated successfully", profile: updated });
   } catch (err: any) {
     console.error("Error updating profile:", err);
     res.status(500).json({ error: err.message || "Failed to update profile" });
@@ -59,7 +49,7 @@ export const updateProfile = async (req: AuthRequest, res: Response): Promise<vo
 };
 
 /**
- * Upload and update the user's profile photo (stored on S3)
+ * Upload and update the user's profile photo
  */
 export const updateProfilePhoto = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -69,13 +59,15 @@ export const updateProfilePhoto = async (req: AuthRequest, res: Response): Promi
       return;
     }
 
-    const file = req.file as S3File;
-    if (!file || !file.location) {
+    const file = req.file as Express.Multer.File;
+    if (!file) {
       res.status(400).json({ error: "No photo uploaded" });
       return;
     }
 
+    
     const photoUrl = file.location;
+
 
     const updated = await updateUserProfile(email, { photoUrl });
 

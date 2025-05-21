@@ -21,7 +21,7 @@ export const updateUserProfile = async (email: string, updates: Partial<User>): 
   
     const mergedUser = { ...existing, ...updates };
   
-    // ✅ Type-safe cleanup
+    
     const cleanedUser: Partial<User> = {};
     (Object.keys(mergedUser) as (keyof User)[]).forEach((key) => {
       const value = mergedUser[key];
