@@ -1,9 +1,8 @@
-// src/middleware/multerS3Config.ts
-import multer from 'multer';
+import multer, { FileFilterCallback } from 'multer';
 import multerS3 from 'multer-s3';
 import { S3Client } from '@aws-sdk/client-s3';
+import { Request } from 'express';
 import dotenv from 'dotenv';
-import path from 'path';
 
 dotenv.config();
 
@@ -19,20 +18,18 @@ const s3Uploader = multer({
   storage: multerS3({
     s3,
     bucket: process.env.AWS_S3_BUCKET!,
-    metadata: (_req, file, cb) => {
+    acl: 'public-read',
+    metadata: (_req: Request, file: Express.Multer.File, cb: (error: any, metadata?: any) => void) => {
       cb(null, { fieldName: file.fieldname });
     },
-    key: (_req, file, cb) => {
-      const fileName = `${Date.now()}-${path.basename(file.originalname)}`;
-      cb(null, fileName);
+    key: (_req: Request, file: Express.Multer.File, cb: (error: any, key?: string) => void) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
     },
-    contentType: multerS3.AUTO_CONTENT_TYPE,
-    acl: 'public-read' // Or private, depending on needs
   }),
-  fileFilter: (_req, file, cb) => {
+  fileFilter: (_req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
     if (file.mimetype.startsWith('image/')) cb(null, true);
     else cb(new Error('Only image files are allowed'));
-  }
+  },
 });
 
 export { s3Uploader };

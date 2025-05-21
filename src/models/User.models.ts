@@ -1,5 +1,3 @@
-
-
 export interface User {
   userId: string;
   name: string;
@@ -10,16 +8,23 @@ export interface User {
   gender?: string;
   bloodType?: string;
   phone?: string;
-  profilePhotoUrl?: string;
+
+  // ✅ Updated this to match what we're using in controllers
+  photoUrl?: string;
+
+  // ✅ Keep existing location structure
   location?: {
     latitude: number;
     longitude: number;
     address?: string;
-    photoUrl?: string;
   };
 }
 
+/**
+ * Generate a unique user ID with a random string
+ */
 export const generateUserId = (): string => {
   return `user_${Math.random().toString(36).substring(2, 10)}`;
 };
+
 export {};
