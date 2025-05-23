@@ -1,3 +1,4 @@
+
 import { DynamoDBClient, PutItemCommand, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -83,13 +84,17 @@ export class AuthService {
       token,
       userId: user.userId,
       email: user.email,
-      name: user.name,
+      name: user.name ?? null,
       age: user.age ?? null,
       gender: user.gender ?? null,
       bloodType: user.bloodType ?? null,
       phone: user.phone ?? null,
       photoUrl: user.photoUrl ?? null,
-      location: user.location ?? null,
+      location: user.location ?? {
+        latitude: null,
+        longitude: null,
+        address: null,
+      },
     };
   }
 
@@ -97,11 +102,9 @@ export class AuthService {
     const user = await this.getUserByEmail(email);
     if (!user) throw new Error("User not found");
 
-    const token = jwt.sign(
-      { userId: user.userId, email: user.email },
-      JWT_SECRET,
-      { expiresIn: "15m" }
-    );
+    const token = jwt.sign({ userId: user.userId, email: user.email }, JWT_SECRET, {
+      expiresIn: "15m",
+    });
 
     const resetLink = `${process.env.FRONTEND_RESET_URL}?token=${token}&email=${email}`;
 
