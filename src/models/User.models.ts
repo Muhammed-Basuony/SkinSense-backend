@@ -4,25 +4,18 @@ export interface User {
   email: string;
   password: string;
   createdAt: string;
-  age?: number;
-  gender?: string;
-  bloodType?: string;
-  phone?: string;
-
-  // ✅ Updated this to match what we're using in controllers
-  photoUrl?: string;
-
-  // ✅ Keep existing location structure
+  age?: number | null;
+  gender?: string | null;
+  bloodType?: string | null;
+  phone?: string | null;
+  photoUrl?: string | null;
   location?: {
-    latitude: number;
-    longitude: number;
-    address?: string;
-  };
+    latitude: number | null;
+    longitude: number | null;
+    address?: string | null;
+  } | null;
 }
 
-/**
- * Generate a unique user ID with a random string
- */
 export const generateUserId = (): string => {
   return `user_${Math.random().toString(36).substring(2, 10)}`;
 };

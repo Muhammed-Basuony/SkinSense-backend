@@ -26,6 +26,12 @@ export class AuthService {
       email,
       password: hashedPassword,
       createdAt: new Date().toISOString(),
+      age: null,
+      gender: null,
+      bloodType: null,
+      phone: null,
+      photoUrl: null,
+      location: null,
     };
 
     const putCommand = new PutItemCommand({
@@ -36,6 +42,12 @@ export class AuthService {
         email: { S: newUser.email },
         password: { S: newUser.password },
         createdAt: { S: newUser.createdAt },
+        age: { NULL: true },
+        gender: { NULL: true },
+        bloodType: { NULL: true },
+        phone: { NULL: true },
+        photoUrl: { NULL: true },
+        location: { NULL: true },
       },
     });
 
@@ -48,6 +60,12 @@ export class AuthService {
       userId: newUser.userId,
       email: newUser.email,
       name: newUser.name,
+      age: null,
+      gender: null,
+      bloodType: null,
+      phone: null,
+      photoUrl: null,
+      location: null,
     };
   }
 
@@ -66,6 +84,12 @@ export class AuthService {
       userId: user.userId,
       email: user.email,
       name: user.name,
+      age: user.age ?? null,
+      gender: user.gender ?? null,
+      bloodType: user.bloodType ?? null,
+      phone: user.phone ?? null,
+      photoUrl: user.photoUrl ?? null,
+      location: user.location ?? null,
     };
   }
 
@@ -123,6 +147,12 @@ export class AuthService {
         email: { S: user.email },
         password: { S: hashedPassword },
         createdAt: { S: user.createdAt },
+        age: user.age ? { N: user.age.toString() } : { NULL: true },
+        gender: user.gender ? { S: user.gender } : { NULL: true },
+        bloodType: user.bloodType ? { S: user.bloodType } : { NULL: true },
+        phone: user.phone ? { S: user.phone } : { NULL: true },
+        photoUrl: user.photoUrl ? { S: user.photoUrl } : { NULL: true },
+        location: user.location ? { S: JSON.stringify(user.location) } : { NULL: true },
       },
     });
 
@@ -148,6 +178,12 @@ export class AuthService {
       email: response.Item.email.S!,
       password: response.Item.password.S!,
       createdAt: response.Item.createdAt.S!,
+      age: response.Item.age?.N ? parseInt(response.Item.age.N) : null,
+      gender: response.Item.gender?.S ?? null,
+      bloodType: response.Item.bloodType?.S ?? null,
+      phone: response.Item.phone?.S ?? null,
+      photoUrl: response.Item.photoUrl?.S ?? null,
+      location: response.Item.location?.S ? JSON.parse(response.Item.location.S) : null,
     };
   }
 }
