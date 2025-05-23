@@ -16,37 +16,59 @@ export class ProfileService {
     if (!result.Item) throw new Error("User not found");
 
     return {
-      name: result.Item.name?.S,
-      email: result.Item.email?.S,
-      age: result.Item.age?.N,
-      gender: result.Item.gender?.S,
-      bloodType: result.Item.bloodType?.S,
-      phone: result.Item.phone?.S,
-      photoUrl: result.Item.photoUrl?.S,
-      address: result.Item.address?.S,
+      name: result.Item.name?.S || null,
+      email: result.Item.email?.S || null,
+      age: result.Item.age?.N ? Number(result.Item.age.N) : null,
+      gender: result.Item.gender?.S || null,
+      bloodType: result.Item.bloodType?.S || null,
+      phone: result.Item.phone?.S || null,
+      photoUrl: result.Item.photoUrl?.S || null,
+      location: result.Item.latitude && result.Item.longitude ? {
+        latitude: parseFloat(result.Item.latitude.N!),
+        longitude: parseFloat(result.Item.longitude.N!),
+        address: result.Item.address?.S || null,
+      } : null,
     };
   }
 
   async updateProfile(userId: string, data: any) {
-    const attributes = {
-      ":age": { N: data.age?.toString() },
-      ":gender": { S: data.gender || "" },
-      ":bloodType": { S: data.bloodType || "" },
-      ":phone": { S: data.phone || "" },
-      ":photoUrl": { S: data.photoUrl || "" },
-      ":address": { S: data.address || "" },
-    };
+    const attributes: any = {};
+    const updateExpressions: string[] = [];
+
+    if (data.age !== undefined) {
+      attributes[":age"] = { N: data.age.toString() };
+      updateExpressions.push("age = :age");
+    }
+    if (data.gender !== undefined) {
+      attributes[":gender"] = { S: data.gender };
+      updateExpressions.push("gender = :gender");
+    }
+    if (data.bloodType !== undefined) {
+      attributes[":bloodType"] = { S: data.bloodType };
+      updateExpressions.push("bloodType = :bloodType");
+    }
+    if (data.phone !== undefined) {
+      attributes[":phone"] = { S: data.phone };
+      updateExpressions.push("phone = :phone");
+    }
+    if (data.photoUrl !== undefined) {
+      attributes[":photoUrl"] = { S: data.photoUrl };
+      updateExpressions.push("photoUrl = :photoUrl");
+    }
+    if (data.location?.latitude !== undefined && data.location?.longitude !== undefined) {
+      attributes[":latitude"] = { N: data.location.latitude.toString() };
+      attributes[":longitude"] = { N: data.location.longitude.toString() };
+      updateExpressions.push("latitude = :latitude", "longitude = :longitude");
+      if (data.location.address !== undefined) {
+        attributes[":address"] = { S: data.location.address };
+        updateExpressions.push("address = :address");
+      }
+    }
 
     const updateCommand = new UpdateItemCommand({
       TableName: USERS_TABLE,
       Key: { userId: { S: userId } },
-      UpdateExpression: `
-        SET age = :age,
-            gender = :gender,
-            bloodType = :bloodType,
-            phone = :phone,
-            photoUrl = :photoUrl,
-            address = :address`,
+      UpdateExpression: `SET ${updateExpressions.join(", ")}`,
       ExpressionAttributeValues: attributes,
     });
 
