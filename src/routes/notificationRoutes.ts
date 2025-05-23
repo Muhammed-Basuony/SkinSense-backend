@@ -8,17 +8,66 @@ import {
 const router = express.Router();
 
 /**
- * @route GET /api/notifications
- * @desc Get all notifications for logged-in user
- * @access Protected
+ * @swagger
+ * tags:
+ *   name: Notifications
+ *   description: Notification management
  */
-router.get("/", authenticateToken, getNotifications);
 
 /**
- * @route POST /api/notifications/mark-seen
- * @desc Mark a specific notification as seen
- * @access Protected
+ * @swagger
+ * /api/notifications:
+ *   get:
+ *     summary: Get all notifications for the logged-in user
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of notifications
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 notifications:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Notification'
  */
+
+/**
+ * @swagger
+ * /api/notifications/mark-seen:
+ *   post:
+ *     summary: Mark a notification as seen
+ *     tags: [Notifications]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - notificationId
+ *             properties:
+ *               notificationId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Notification marked as seen
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+
+router.get("/", authenticateToken, getNotifications);
 router.post("/mark-seen", authenticateToken, markAsSeen);
 
 export default router;
