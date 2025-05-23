@@ -16,15 +16,15 @@ dotenv.config();
 const app = express();
 const PORT = parseInt(process.env.PORT || '5000', 10);
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Swagger setup
+
 setupSwagger(app);
 
-// API Routes
+
 app.use("/api/group-chat", groupChatRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/chatbot", chatbotRoutes);
