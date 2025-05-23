@@ -1,10 +1,14 @@
-import { DynamoDBClient, PutItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBClient,
+  PutItemCommand,
+  QueryCommand,
+  GetItemCommand,
+} from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
 const dynamo = new DynamoDBClient({ region: "eu-north-1" });
 const GROUP_CHATS_TABLE = "GroupChats";
 const GROUP_MESSAGES_TABLE = "GroupMessages";
-
 
 export const createGroupChat = async (group: {
   groupId: string;
@@ -20,7 +24,6 @@ export const createGroupChat = async (group: {
   await dynamo.send(cmd);
   return group;
 };
-
 
 export const addMessageToChat = async (
   groupId: string,
@@ -44,7 +47,6 @@ export const addMessageToChat = async (
   return message;
 };
 
-
 export const getChatMessages = async (groupId: string) => {
   const cmd = new QueryCommand({
     TableName: GROUP_MESSAGES_TABLE,
@@ -57,4 +59,20 @@ export const getChatMessages = async (groupId: string) => {
 
   const result = await dynamo.send(cmd);
   return result.Items?.map((item) => unmarshall(item)) || [];
+};
+
+export const getGroupById = async (groupId: string) => {
+  const cmd = new GetItemCommand({
+    TableName: GROUP_CHATS_TABLE,
+    Key: {
+      groupId: { S: groupId },
+    },
+  });
+
+  const result = await dynamo.send(cmd);
+  if (!result.Item) {
+    throw new Error("Group not found");
+  }
+
+  return unmarshall(result.Item);
 };

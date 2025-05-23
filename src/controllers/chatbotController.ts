@@ -48,14 +48,23 @@ export const askChatbot = async (req: AuthRequest, res: Response): Promise<void>
     const data: OpenRouterResponse = await response.json();
     const reply = data.choices?.[0]?.message?.content || "No reply from chatbot.";
 
+    
     await saveChatToDynamoDB(userId, message, reply);
+
+   
+    await sendNotification(
+      userId,
+      "chat",
+      "New reply from chatbot",
+      reply
+    );
+
     res.status(200).json({ reply });
   } catch (err: any) {
     console.error("Chatbot error:", err?.response?.data || err.message);
     res.status(500).json({ error: "Something went wrong with the chatbot" });
   }
 };
-
 
 export const getChatHistory = async (req: AuthRequest, res: Response): Promise<void> => {
   const userId = req.user?.userId;
@@ -72,5 +81,3 @@ export const getChatHistory = async (req: AuthRequest, res: Response): Promise<v
     res.status(500).json({ error: "Unable to retrieve chat history" });
   }
 };
- 
-

@@ -5,7 +5,10 @@ import {
   createGroupChat,
   addMessageToChat,
   getChatMessages,
+  getGroupById,
 } from "../services/groupChatService";
+import { sendNotification } from "../utils/notificationUtils";
+
 
 export const startGroupChat = async (req: AuthRequest, res: Response): Promise<void> => {
   const userId = req.user?.userId;
@@ -45,6 +48,22 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
 
   try {
     const result = await addMessageToChat(chatId, senderId, text);
+
+    // Notify other group members
+    const group = await getGroupById(chatId);
+    const recipients = group.members.filter((id: string) => id !== senderId);
+
+    await Promise.all(
+      recipients.map((userId: string) =>
+        sendNotification(
+          userId,
+          "chat",
+          "New group message",
+          `New message in ${group.name}`
+        )
+      )
+    );
+
     res.status(200).json({ message: "Message sent", data: result });
   } catch (err) {
     console.error("Error sending message:", err);
@@ -68,5 +87,4 @@ export const fetchMessages = async (req: AuthRequest, res: Response): Promise<vo
     res.status(500).json({ error: "Failed to fetch messages." });
   }
 };
-
 
