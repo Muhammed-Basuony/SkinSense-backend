@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { askChatWithImage, getChatHistory } from "../controllers/chatbotController";
 import { authenticateToken, AuthRequest } from "../middleware/authMiddleware";
-import { s3Upload } from "../utils/s3"; 
+import { s3Upload } from "../utils/s3";
 
 const router = express.Router();
 
@@ -26,6 +26,7 @@ const router = express.Router();
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required: []
  *             properties:
  *               message:
  *                 type: string
@@ -54,9 +55,14 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.post("/chat", authenticateToken, s3Upload.single("image"), async (req: AuthRequest, res: Response) => {
-  await askChatWithImage(req, res);
-});
+router.post(
+  "/chat",
+  authenticateToken,
+  s3Upload.single("image"),
+  async (req: AuthRequest, res: Response) => {
+    await askChatWithImage(req, res);
+  }
+);
 
 /**
  * @swagger
