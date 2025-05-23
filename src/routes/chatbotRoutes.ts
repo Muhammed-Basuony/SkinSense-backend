@@ -90,7 +90,7 @@ router.post("/chat", authenticateToken, async (req: AuthRequest, res: Response) 
  *         description: Failed to retrieve chat history
  */
 
-router.get("/chatbot/history", authenticateToken, async (req: AuthRequest, res: Response) => {
+router.get("/history", authenticateToken, async (req: AuthRequest, res: Response) => {
   await getChatHistory(req, res);
 });
 export default router;

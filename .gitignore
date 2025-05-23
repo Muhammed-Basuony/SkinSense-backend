@@ -1,3 +1,6 @@
 .env 
 node_modules
 dermatology_doctors1.json
+SkinSenseData
+tf-venv
+venv
