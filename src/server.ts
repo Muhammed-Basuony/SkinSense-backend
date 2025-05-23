@@ -10,6 +10,7 @@ import profileRoutes from './routes/profileRoutes';
 import { setupSwagger } from './swagger';
 import groupChatRoutes from "./routes/groupChatRoutes";
 import doctorRoutes from "./routes/doctorRoutes";
+import notificationRoutes from "./routes/notificationRoutes";
 
 const PORT = parseInt(process.env.PORT || '5000', 10);
 
@@ -20,6 +21,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/profile', profileRoutes);
 app.use("/api/doctors", doctorRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 
 setupSwagger(app);

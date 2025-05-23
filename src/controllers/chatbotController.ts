@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AuthRequest } from "../middleware/authMiddleware";
 import { saveChatToDynamoDB, getChatHistoryFromDynamoDB } from "../utils/dynamoUtils";
+import { sendNotification } from "../utils/notificationUtils";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
@@ -54,6 +55,7 @@ export const askChatbot = async (req: AuthRequest, res: Response): Promise<void>
     res.status(500).json({ error: "Something went wrong with the chatbot" });
   }
 };
+
 
 export const getChatHistory = async (req: AuthRequest, res: Response): Promise<void> => {
   const userId = req.user?.userId;
