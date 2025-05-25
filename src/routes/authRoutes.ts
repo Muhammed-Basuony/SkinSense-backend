@@ -1,4 +1,3 @@
-
 import express, { Request, Response, NextFunction } from 'express';
 import { AuthController } from '../controllers/authController';
 import { authenticateToken, AuthRequest } from '../middleware/authMiddleware';
@@ -93,9 +92,36 @@ router.post('/login', loginValidation, handleValidation, (req: Request, res: Res
 
 /**
  * @swagger
+ * /api/auth/forgot-password:
+ *   post:
+ *     summary: Send password reset email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Reset password email sent
+ *       400:
+ *         description: Validation error or user not found
+ */
+router.post('/forgot-password', (req: Request, res: Response) => {
+  authController.forgotPassword(req, res);
+});
+
+/**
+ * @swagger
  * /api/auth/reset-password:
  *   post:
- *     summary: Reset password for a user using token
+ *     summary: Reset password using token
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -121,43 +147,10 @@ router.post('/login', loginValidation, handleValidation, (req: Request, res: Res
  *       200:
  *         description: Password reset successful
  *       400:
- *         description: Invalid token or user not found
+ *         description: Invalid token or mismatch
  */
 router.post('/reset-password', resetPasswordValidation, handleValidation, (req: Request, res: Response) => {
   authController.resetPassword(req, res);
-});
-
-/**
- * @swagger
- * /api/auth/forgot-password:
- *   post:
- *     summary: Send password reset email to user
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *             properties:
- *               email:
- *                 type: string
- *     responses:
- *       200:
- *         description: Reset password email sent
- *       400:
- *         description: User not found or email error
- */
-router.post('/forgot-password', async (req: Request, res: Response) => {
-  try {
-    const { email } = req.body;
-    const message = await authController.forgotPassword(email);
-    res.status(200).json({ message });
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
-  }
 });
 
 /**
