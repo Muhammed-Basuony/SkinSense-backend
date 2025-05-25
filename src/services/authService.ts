@@ -1,10 +1,10 @@
-
 import { DynamoDBClient, PutItemCommand, GetItemCommand } from "@aws-sdk/client-dynamodb";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { transporter } from "../utils/mailer";
-import { User, generateUserId } from "../models/User.models";
 import dotenv from "dotenv";
+import { sendResetEmail } from "../utils/emailService";
+import { User, generateUserId } from "../models/User.models";
+
 dotenv.config();
 
 const dynamo = new DynamoDBClient({ region: "eu-north-1" });
@@ -66,7 +66,11 @@ export class AuthService {
       bloodType: null,
       phone: null,
       photoUrl: null,
-      location: null,
+      location: {
+        latitude: null,
+        longitude: null,
+        address: null,
+      },
     };
   }
 
@@ -106,19 +110,7 @@ export class AuthService {
       expiresIn: "15m",
     });
 
-    const resetLink = `${process.env.FRONTEND_RESET_URL}?token=${token}&email=${email}`;
-
-    await transporter.sendMail({
-      from: '"SkinSense Support" <support@skinsense.app>',
-      to: email,
-      subject: "Reset Your SkinSense Password",
-      html: `
-        <h2>Reset Password</h2>
-        <p>Click the link below to reset your password:</p>
-        <a href="${resetLink}">${resetLink}</a>
-        <p>This link will expire in 15 minutes.</p>
-      `,
-    });
+    await sendResetEmail(email, token);
 
     return "Reset password link sent to your email";
   }
@@ -186,7 +178,11 @@ export class AuthService {
       bloodType: response.Item.bloodType?.S ?? null,
       phone: response.Item.phone?.S ?? null,
       photoUrl: response.Item.photoUrl?.S ?? null,
-      location: response.Item.location?.S ? JSON.parse(response.Item.location.S) : null,
+      location: response.Item.location?.S ? JSON.parse(response.Item.location.S) : {
+        latitude: null,
+        longitude: null,
+        address: null,
+      },
     };
   }
 }

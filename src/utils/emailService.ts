@@ -1,13 +1,14 @@
-
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
 export const sendResetEmail = async (email: string, token: string) => {
-  const resetLink = `${process.env.RESET_URL}?token=${token}`;
+  const resetLink = `${process.env.FRONTEND_RESET_URL}?token=${token}&email=${encodeURIComponent(email)}`;
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.EMAIL_HOST,
+    port: parseInt(process.env.EMAIL_PORT || "587", 10),
+    secure: process.env.EMAIL_SECURE === "true",
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
@@ -15,14 +16,17 @@ export const sendResetEmail = async (email: string, token: string) => {
   });
 
   const mailOptions = {
-    from: `"SkinSense Support" <${process.env.EMAIL_USER}>`,
+    from: process.env.EMAIL_FROM,
     to: email,
-    subject: "Password Reset Request",
+    subject: "Reset Your SkinSense Password",
     html: `
-      <p>You requested a password reset.</p>
-      <p>Click the link below to reset your password:</p>
+      <p>Hi,</p>
+      <p>You requested to reset your password. Click the link below:</p>
       <a href="${resetLink}">${resetLink}</a>
       <p>This link will expire in 15 minutes.</p>
+      <p>If you didn’t request this, you can ignore this email.</p>
+      <br/>
+      <p>— The SkinSense Team</p>
     `,
   };
 
