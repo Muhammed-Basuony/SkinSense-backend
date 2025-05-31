@@ -49,7 +49,7 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
   try {
     const result = await addMessageToChat(chatId, senderId, text);
 
-    // Notify other group members
+    
     const group = await getGroupById(chatId);
     const recipients = group.members.filter((id: string) => id !== senderId);
 
