@@ -4,3 +4,11 @@ dermatology_doctors1.json
 SkinSenseData
 tf-venv
 venv
+SkinSenseModel.zip
+SkinSenseModel_Float32.tflite
+SkinSenseModel.tflite
+convert_to_tflite.py
+skin_model_api.py
+SkinSenseModel
+build
+logs
