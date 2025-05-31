@@ -1,41 +1,25 @@
 from flask import Flask, request, jsonify
-import tensorflow as tf
 import numpy as np
-from keras.utils import load_img, img_to_array
+from PIL import Image
+import tflite_runtime.interpreter as tflite
 from io import BytesIO
 
 app = Flask(__name__)
 
-# Load the model using TFSMLayer
-model = tf.keras.layers.TFSMLayer("SkinSenseModel", call_endpoint="serve")
+# Load TFLite model
+interpreter = tflite.Interpreter(model_path="SkinSenseModel.tflite")
+interpreter.allocate_tensors()
+
+# Get input and output details
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
 # List of 25 class labels
 class_labels = [
-    "Acne",
-    "Actinic_Keratosis",
-    "Benign_tumors",
-    "Bullous",
-    "burn_1st",
-    "burn_2nd",
-    "burn_3rd",
-    "Candidiasis",
-    "DrugEruption",
-    "Eczema",
-    "Infestations_Bites",
-    "Lichen",
-    "Lupus",
-    "Moles",
-    "Psoriasis",
-    "Rosacea",
-    "Seborrh_Keratoses",
-    "SkinCancer",
-    "Sun_Sunlight_Damage",
-    "Tinea",
-    "Unknown_Normal",
-    "Vascular_Tumors",
-    "Vasculitis",
-    "Vitiligo",
-    "Warts"
+    "Acne", "Actinic_Keratosis", "Benign_tumors", "Bullous", "burn_1st", "burn_2nd", "burn_3rd",
+    "Candidiasis", "DrugEruption", "Eczema", "Infestations_Bites", "Lichen", "Lupus", "Moles",
+    "Psoriasis", "Rosacea", "Seborrh_Keratoses", "SkinCancer", "Sun_Sunlight_Damage", "Tinea",
+    "Unknown_Normal", "Vascular_Tumors", "Vasculitis", "Vitiligo", "Warts"
 ]
 
 @app.route('/predict', methods=['POST'])
@@ -46,18 +30,20 @@ def predict():
     img_file = request.files['file']
 
     try:
-        # Wrap the uploaded file in BytesIO for load_img
-        img = load_img(BytesIO(img_file.read()), target_size=(224, 224))
-        img_array = img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0) / 255.0
+        img = Image.open(BytesIO(img_file.read())).convert("RGB")
+        img = img.resize((224, 224))
+        img_array = np.expand_dims(np.array(img) / 255.0, axis=0).astype(np.float32)
 
-        predictions = model(img_array)
-        predicted_index = np.argmax(predictions[0])
+        interpreter.set_tensor(input_details[0]['index'], img_array)
+        interpreter.invoke()
+        output_data = interpreter.get_tensor(output_details[0]['index'])
+
+        predicted_index = int(np.argmax(output_data[0]))
         predicted_label = class_labels[predicted_index]
-        confidence = float(predictions[0][predicted_index].numpy())
+        confidence = float(output_data[0][predicted_index])
 
         return jsonify({
-            'predicted_index': int(predicted_index),
+            'predicted_index': predicted_index,
             'predicted_label': predicted_label,
             'confidence': confidence
         })
