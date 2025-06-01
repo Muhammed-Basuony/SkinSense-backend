@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyUsersExist = exports.getUserGroups = exports.getGroupById = exports.getChatMessages = exports.addMessageToChat = exports.createGroupChat = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 const util_dynamodb_1 = require("@aws-sdk/util-dynamodb");
-const uuid_1 = require("uuid");
 const dynamo = new client_dynamodb_1.DynamoDBClient({ region: "eu-north-1" });
 const GROUP_CHATS_TABLE = "GroupChats";
 const GROUP_MESSAGES_TABLE = "GroupMessages";
@@ -29,7 +28,6 @@ const addMessageToChat = (groupId, senderId, content) => __awaiter(void 0, void 
     const timestamp = new Date().toISOString();
     const message = {
         groupId,
-        messageId: (0, uuid_1.v4)(),
         timestamp,
         senderId,
         content,
@@ -51,7 +49,7 @@ const getChatMessages = (groupId) => __awaiter(void 0, void 0, void 0, function*
         },
         ScanIndexForward: true,
     }));
-    return ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.map(item => (0, util_dynamodb_1.unmarshall)(item))) || [];
+    return ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.map((item) => (0, util_dynamodb_1.unmarshall)(item))) || [];
 });
 exports.getChatMessages = getChatMessages;
 const getGroupById = (groupId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -69,8 +67,8 @@ const getUserGroups = (userId) => __awaiter(void 0, void 0, void 0, function* ()
         TableName: GROUP_CHATS_TABLE,
     }));
     return (result.Items || [])
-        .map(item => (0, util_dynamodb_1.unmarshall)(item))
-        .filter(group => group.members.includes(userId));
+        .map((item) => (0, util_dynamodb_1.unmarshall)(item))
+        .filter((group) => group.members.includes(userId));
 });
 exports.getUserGroups = getUserGroups;
 const verifyUsersExist = (emails) => __awaiter(void 0, void 0, void 0, function* () {
@@ -91,7 +89,7 @@ const verifyUsersExist = (emails) => __awaiter(void 0, void 0, void 0, function*
         }
         catch (err) {
             console.error(`❌ Error checking user "${email}":`, err.message);
-            invalid.push(email); // still count as invalid
+            invalid.push(email);
         }
     }
     return invalid;

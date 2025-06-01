@@ -47,18 +47,18 @@ export const createCustomGroupChat = async (req: AuthRequest, res: Response): Pr
 
 export const sendMessage = async (req: AuthRequest, res: Response): Promise<void> => {
   const senderEmail = req.user?.email; 
-  const { chatId, text } = req.body;
+  const { groupId, text } = req.body;
 
-  if (!senderEmail || !chatId || !text) {
+  if (!senderEmail || !groupId || !text) {
     res.status(400).json({ error: 'chatId and text are required.' });
     return;
   }
 
   try {
-    const group = await getGroupById(chatId);
+    const group = await getGroupById(groupId);
     if (!group) throw new Error('Group not found');
 
-    const message = await addMessageToChat(chatId, senderEmail, text);
+    const message = await addMessageToChat(groupId, senderEmail, text);
     const recipients = group.members.filter((email: string) => email !== senderEmail);
 
     await Promise.all(
