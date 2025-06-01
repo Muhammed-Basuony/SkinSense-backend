@@ -1,16 +1,15 @@
 import {
-  DynamoDBClient,
   PutItemCommand,
   QueryCommand,
   GetItemCommand,
+  ScanCommand,
+  DynamoDBClient,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
-const dynamo = new DynamoDBClient({ region: "eu-north-1" });
-
+const client = new DynamoDBClient({ region: "eu-north-1" });
 const GROUP_CHATS_TABLE = "GroupChats";
 const GROUP_MESSAGES_TABLE = "GroupMessages";
-
 
 export const createGroupChat = async (group: {
   groupId: string;
@@ -23,10 +22,9 @@ export const createGroupChat = async (group: {
     TableName: GROUP_CHATS_TABLE,
     Item: marshall(group),
   });
-  await dynamo.send(cmd);
+  await client.send(cmd);
   return group;
 };
-
 
 export const addMessageToChat = async (
   groupId: string,
@@ -41,22 +39,14 @@ export const addMessageToChat = async (
     content,
   };
 
-  console.log("💬 Sending message to DynamoDB:", message);
+  const cmd = new PutItemCommand({
+    TableName: GROUP_MESSAGES_TABLE,
+    Item: marshall(message),
+  });
 
-  try {
-    const cmd = new PutItemCommand({
-      TableName: GROUP_MESSAGES_TABLE,
-      Item: marshall(message),
-    });
-
-    await dynamo.send(cmd);
-    return message;
-  } catch (err) {
-    console.error("❌ Failed to add message to chat:", err);
-    throw err;
-  }
+  await client.send(cmd);
+  return message;
 };
-
 
 export const getChatMessages = async (groupId: string) => {
   const cmd = new QueryCommand({
@@ -65,13 +55,12 @@ export const getChatMessages = async (groupId: string) => {
     ExpressionAttributeValues: {
       ":groupId": { S: groupId },
     },
-    ScanIndexForward: true, 
+    ScanIndexForward: true,
   });
 
-  const result = await dynamo.send(cmd);
+  const result = await client.send(cmd);
   return result.Items?.map((item) => unmarshall(item)) || [];
 };
-
 
 export const getGroupById = async (groupId: string) => {
   const cmd = new GetItemCommand({
@@ -81,10 +70,22 @@ export const getGroupById = async (groupId: string) => {
     },
   });
 
-  const result = await dynamo.send(cmd);
+  const result = await client.send(cmd);
   if (!result.Item) {
     throw new Error("Group not found");
   }
 
   return unmarshall(result.Item);
+};
+
+export const getGroupsForUser = async (userId: string) => {
+  const scanCommand = new ScanCommand({
+    TableName: GROUP_CHATS_TABLE,
+  });
+
+  const result = await client.send(scanCommand);
+
+  const allGroups = result.Items?.map((item) => unmarshall(item)) || [];
+
+  return allGroups.filter((group) => group.members?.includes(userId));
 };

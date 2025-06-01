@@ -6,8 +6,43 @@ import {
   addMessageToChat,
   getChatMessages,
   getGroupById,
+  getGroupsForUser,
 } from "../services/groupChatService";
 import { sendNotification } from "../utils/notificationUtils";
+import { verifyUsersExist } from "../services/userService";
+
+export const createCustomGroupChat = async (req: AuthRequest, res: Response): Promise<void> => {
+  const creatorId = req.user?.userId;
+  const { name, members } = req.body;
+
+  if (!creatorId || !name || !Array.isArray(members)) {
+    res.status(400).json({ error: "Group name and members are required." });
+    return;
+  }
+
+  const uniqueMembers = [...new Set([creatorId, ...members])];
+
+  try {
+    const valid = await verifyUsersExist(uniqueMembers);
+    if (!valid) {
+      res.status(400).json({ error: "One or more user IDs are invalid." });
+      return;
+    }
+
+    const group = await createGroupChat({
+      groupId: uuidv4(),
+      name,
+      members: uniqueMembers,
+      createdAt: new Date().toISOString(),
+    });
+
+    res.status(201).json({ message: "Custom group created", group });
+  } catch (err) {
+    console.error("Error creating custom group:", err);
+    res.status(500).json({ error: "Failed to create custom group." });
+  }
+};
+
 
 export const startGroupChat = async (req: AuthRequest, res: Response): Promise<void> => {
   const userId = req.user?.userId;
@@ -33,7 +68,6 @@ export const startGroupChat = async (req: AuthRequest, res: Response): Promise<v
   } catch (err) {
     console.error("Error starting group chat:", err);
     res.status(500).json({ error: "Failed to create group chat." });
-    return;
   }
 };
 
@@ -47,13 +81,10 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
   }
 
   try {
-    console.log("Sending message:", { senderId, chatId, text });
-
     const result = await addMessageToChat(chatId, senderId, text);
 
     const group = await getGroupById(chatId);
     if (!group || !group.members) {
-      console.error("Group not found or has no members:", group);
       res.status(404).json({ error: "Group not found." });
       return;
     }
@@ -75,7 +106,6 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
   } catch (err) {
     console.error("Error sending message:", err);
     res.status(500).json({ error: "Failed to send message." });
-    return;
   }
 };
 
@@ -93,6 +123,22 @@ export const fetchMessages = async (req: AuthRequest, res: Response): Promise<vo
   } catch (err) {
     console.error("Error fetching messages:", err);
     res.status(500).json({ error: "Failed to fetch messages." });
+  }
+};
+
+export const listUserGroups = async (req: AuthRequest, res: Response): Promise<void> => {
+  const userId = req.user?.userId;
+
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" });
     return;
+  }
+
+  try {
+    const groups = await getGroupsForUser(userId);
+    res.status(200).json({ groups });
+  } catch (err) {
+    console.error("Error fetching user groups:", err);
+    res.status(500).json({ error: "Failed to fetch group chats." });
   }
 };

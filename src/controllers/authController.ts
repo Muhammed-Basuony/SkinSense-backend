@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/authService';
 import logger from '../utils/logger';
+import { addUserToDefaultGroups } from "../utils/addUserToDefaultGroups";
 
 const authService = new AuthService();
 
@@ -8,7 +9,11 @@ export class AuthController {
   async signup(req: Request, res: Response) {
     try {
       const result = await authService.signup(req.body);
-      logger.info(`New user signed up: ${result.email}`);
+
+      const userId = result.email; 
+      await addUserToDefaultGroups(userId); 
+
+      logger.info(`New user signed up: ${userId}`);
       return res.status(201).json({ message: 'User created', result });
     } catch (error: any) {
       logger.error(`Signup Error: ${error.message}`);
@@ -64,4 +69,3 @@ export class AuthController {
     }
   }
 }
-

@@ -4,6 +4,8 @@ import {
   startGroupChat,
   sendMessage,
   fetchMessages,
+  listUserGroups,
+  createCustomGroupChat,
 } from "../controllers/groupChatController";
 
 const router = express.Router();
@@ -31,8 +33,6 @@ const router = express.Router();
  *     responses:
  *       201:
  *         description: Group chat created successfully
- *       400:
- *         description: Participants are required
  */
 router.post("/create", authenticateToken, startGroupChat);
 
@@ -60,8 +60,6 @@ router.post("/create", authenticateToken, startGroupChat);
  *     responses:
  *       200:
  *         description: Message sent successfully
- *       400:
- *         description: Missing chatId or message text
  */
 router.post("/send", authenticateToken, sendMessage);
 
@@ -83,9 +81,74 @@ router.post("/send", authenticateToken, sendMessage);
  *     responses:
  *       200:
  *         description: List of messages
- *       500:
- *         description: Server error
  */
 router.get("/messages/:chatId", authenticateToken, fetchMessages);
+
+/**
+ * @swagger
+ * /api/group-chat/my-groups:
+ *   get:
+ *     summary: List group chats the current user belongs to
+ *     tags: [Group Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of group chats
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 groups:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       groupId:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       members:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ */
+router.get("/my-groups", authenticateToken, listUserGroups);
+
+/**
+ * @swagger
+ * /api/group-chat/custom:
+ *   post:
+ *     summary: Create a custom group chat
+ *     tags: [Group Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - members
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Eczema Discussion"
+ *               members:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["user1", "user2"]
+ *     responses:
+ *       201:
+ *         description: Group chat created successfully
+ *       400:
+ *         description: Invalid input or user not found
+ */
+router.post("/custom", authenticateToken, createCustomGroupChat);
+
 
 export default router;
