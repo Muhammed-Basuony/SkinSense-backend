@@ -47,10 +47,16 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
   }
 
   try {
+    console.log("Sending message:", { senderId, chatId, text });
+
     const result = await addMessageToChat(chatId, senderId, text);
 
-    
     const group = await getGroupById(chatId);
+    if (!group || !group.members) {
+      res.status(404).json({ error: "Group not found." });
+      return;
+    }
+
     const recipients = group.members.filter((id: string) => id !== senderId);
 
     await Promise.all(
@@ -70,6 +76,7 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
     res.status(500).json({ error: "Failed to send message." });
   }
 };
+
 
 export const fetchMessages = async (req: AuthRequest, res: Response): Promise<void> => {
   const { chatId } = req.params;
