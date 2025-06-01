@@ -11,21 +11,23 @@ const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader === null || authHeader === void 0 ? void 0 : authHeader.split(' ')[1];
     if (!token) {
-        console.warn("No token provided");
-        res.status(401).json({ error: "No token provided" });
+        res.status(401).json({ error: 'No token provided' });
         return;
     }
     try {
-        const secret = process.env.JWT_SECRET || "your-secret";
-        console.log("JWT_SECRET being used:", secret);
+        const secret = process.env.JWT_SECRET;
+        if (!secret)
+            throw new Error('JWT_SECRET is not set');
         const decoded = jsonwebtoken_1.default.verify(token, secret);
-        console.log("Token decoded:", decoded);
-        req.user = decoded;
+        req.user = {
+            email: decoded.email,
+            userId: decoded.userId,
+        };
         next();
     }
     catch (err) {
-        console.error("Token validation failed:", err.message);
-        res.status(403).json({ error: "Invalid or expired token" });
+        console.error('Token validation failed:', err.message);
+        res.status(403).json({ error: 'Invalid or expired token' });
     }
 };
 exports.authenticateToken = authenticateToken;

@@ -21,10 +21,12 @@ export const createGroupChat = async (group: {
   members: string[];
   createdAt: string;
 }) => {
-  await dynamo.send(new PutItemCommand({
-    TableName: GROUP_CHATS_TABLE,
-    Item: marshall(group),
-  }));
+  await dynamo.send(
+    new PutItemCommand({
+      TableName: GROUP_CHATS_TABLE,
+      Item: marshall(group),
+    })
+  );
   return group;
 };
 
@@ -34,59 +36,67 @@ export const addMessageToChat = async (
   senderId: string,
   content: string
 ) => {
-  const timestamp = new Date().toISOString();
+  const timestamp = new Date().toISOString(); 
   const message = {
-    groupId,
-    messageId: uuidv4(),
-    timestamp,
+    groupId,                
+    timestamp,              
+    messageId: uuidv4(),    
     senderId,
     content,
   };
 
-  await dynamo.send(new PutItemCommand({
-    TableName: GROUP_MESSAGES_TABLE,
-    Item: marshall(message),
-  }));
+  await dynamo.send(
+    new PutItemCommand({
+      TableName: GROUP_MESSAGES_TABLE,
+      Item: marshall(message),
+    })
+  );
 
   return message;
 };
 
 
 export const getChatMessages = async (groupId: string) => {
-  const result = await dynamo.send(new QueryCommand({
-    TableName: GROUP_MESSAGES_TABLE,
-    KeyConditionExpression: "groupId = :groupId",
-    ExpressionAttributeValues: {
-      ":groupId": { S: groupId },
-    },
-    ScanIndexForward: true,
-  }));
+  const result = await dynamo.send(
+    new QueryCommand({
+      TableName: GROUP_MESSAGES_TABLE,
+      KeyConditionExpression: "groupId = :groupId",
+      ExpressionAttributeValues: {
+        ":groupId": { S: groupId },
+      },
+      ScanIndexForward: true,
+    })
+  );
 
-  return result.Items?.map(item => unmarshall(item)) || [];
+  return result.Items?.map((item) => unmarshall(item)) || [];
 };
 
 
 export const getGroupById = async (groupId: string) => {
-  const result = await dynamo.send(new GetItemCommand({
-    TableName: GROUP_CHATS_TABLE,
-    Key: {
-      groupId: { S: groupId },
-    },
-  }));
+  const result = await dynamo.send(
+    new GetItemCommand({
+      TableName: GROUP_CHATS_TABLE,
+      Key: {
+        groupId: { S: groupId },
+      },
+    })
+  );
 
   return result.Item ? unmarshall(result.Item) : null;
 };
 
-
 export const getUserGroups = async (userId: string) => {
-  const result = await dynamo.send(new ScanCommand({
-    TableName: GROUP_CHATS_TABLE,
-  }));
+  const result = await dynamo.send(
+    new ScanCommand({
+      TableName: GROUP_CHATS_TABLE,
+    })
+  );
 
   return (result.Items || [])
-    .map(item => unmarshall(item))
-    .filter(group => group.members.includes(userId));
+    .map((item) => unmarshall(item))
+    .filter((group) => group.members.includes(userId));
 };
+
 
 export const verifyUsersExist = async (emails: string[]): Promise<string[]> => {
   const invalid: string[] = [];
@@ -99,7 +109,7 @@ export const verifyUsersExist = async (emails: string[]): Promise<string[]> => {
         new GetItemCommand({
           TableName: USERS_TABLE,
           Key: {
-            email: { S: email }, 
+            email: { S: email },
           },
         })
       );
@@ -110,10 +120,9 @@ export const verifyUsersExist = async (emails: string[]): Promise<string[]> => {
       }
     } catch (err: any) {
       console.error(`❌ Error checking user "${email}":`, err.message);
-      invalid.push(email); // still count as invalid
+      invalid.push(email);
     }
   }
 
   return invalid;
 };
-

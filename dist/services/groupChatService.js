@@ -17,7 +17,6 @@ const dynamo = new client_dynamodb_1.DynamoDBClient({ region: "eu-north-1" });
 const GROUP_CHATS_TABLE = "GroupChats";
 const GROUP_MESSAGES_TABLE = "GroupMessages";
 const USERS_TABLE = "SkinSenseUsers";
-// Create a group chat
 const createGroupChat = (group) => __awaiter(void 0, void 0, void 0, function* () {
     yield dynamo.send(new client_dynamodb_1.PutItemCommand({
         TableName: GROUP_CHATS_TABLE,
@@ -26,7 +25,6 @@ const createGroupChat = (group) => __awaiter(void 0, void 0, void 0, function* (
     return group;
 });
 exports.createGroupChat = createGroupChat;
-// Add a message to a chat with unique messageId
 const addMessageToChat = (groupId, senderId, content) => __awaiter(void 0, void 0, void 0, function* () {
     const timestamp = new Date().toISOString();
     const message = {
@@ -43,7 +41,6 @@ const addMessageToChat = (groupId, senderId, content) => __awaiter(void 0, void 
     return message;
 });
 exports.addMessageToChat = addMessageToChat;
-// Get messages for a group chat
 const getChatMessages = (groupId) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const result = yield dynamo.send(new client_dynamodb_1.QueryCommand({
@@ -57,7 +54,6 @@ const getChatMessages = (groupId) => __awaiter(void 0, void 0, void 0, function*
     return ((_a = result.Items) === null || _a === void 0 ? void 0 : _a.map(item => (0, util_dynamodb_1.unmarshall)(item))) || [];
 });
 exports.getChatMessages = getChatMessages;
-// Get a group by ID
 const getGroupById = (groupId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield dynamo.send(new client_dynamodb_1.GetItemCommand({
         TableName: GROUP_CHATS_TABLE,
@@ -68,7 +64,6 @@ const getGroupById = (groupId) => __awaiter(void 0, void 0, void 0, function* ()
     return result.Item ? (0, util_dynamodb_1.unmarshall)(result.Item) : null;
 });
 exports.getGroupById = getGroupById;
-// Get all groups that a user is a member of
 const getUserGroups = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield dynamo.send(new client_dynamodb_1.ScanCommand({
         TableName: GROUP_CHATS_TABLE,
@@ -78,16 +73,26 @@ const getUserGroups = (userId) => __awaiter(void 0, void 0, void 0, function* ()
         .filter(group => group.members.includes(userId));
 });
 exports.getUserGroups = getUserGroups;
-// Verify if all given users exist
-const verifyUsersExist = (userIds) => __awaiter(void 0, void 0, void 0, function* () {
+const verifyUsersExist = (emails) => __awaiter(void 0, void 0, void 0, function* () {
     const invalid = [];
-    for (const userId of userIds) {
-        const res = yield dynamo.send(new client_dynamodb_1.GetItemCommand({
-            TableName: USERS_TABLE,
-            Key: { userId: { S: userId } },
-        }));
-        if (!res.Item)
-            invalid.push(userId);
+    for (const email of emails) {
+        try {
+            console.log(`🔍 Verifying email: ${email}`);
+            const res = yield dynamo.send(new client_dynamodb_1.GetItemCommand({
+                TableName: USERS_TABLE,
+                Key: {
+                    email: { S: email },
+                },
+            }));
+            if (!res.Item) {
+                console.warn(`❌ User not found in DB: ${email}`);
+                invalid.push(email);
+            }
+        }
+        catch (err) {
+            console.error(`❌ Error checking user "${email}":`, err.message);
+            invalid.push(email); // still count as invalid
+        }
     }
     return invalid;
 });

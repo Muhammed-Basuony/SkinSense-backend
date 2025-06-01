@@ -15,25 +15,25 @@ const groupChatService_1 = require("../services/groupChatService");
 const notificationUtils_1 = require("../utils/notificationUtils");
 const createCustomGroupChat = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const creatorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+    const creatorEmail = (_a = req.user) === null || _a === void 0 ? void 0 : _a.email;
     const { name, memberIds } = req.body;
-    if (!creatorId || !name || !memberIds || !Array.isArray(memberIds)) {
+    if (!creatorEmail || !name || !memberIds || !Array.isArray(memberIds)) {
         res.status(400).json({ error: 'Group name and memberIds are required.' });
         return;
     }
-    const uniqueMembers = [...new Set([creatorId, ...memberIds])];
-    const invalidUsers = yield (0, groupChatService_1.verifyUsersExist)(uniqueMembers);
-    if (invalidUsers.length > 0) {
-        res.status(400).json({ error: `Invalid users: ${invalidUsers.join(', ')}` });
-        return;
-    }
-    const group = {
-        groupId: (0, uuid_1.v4)(),
-        name,
-        members: uniqueMembers,
-        createdAt: new Date().toISOString(),
-    };
+    const uniqueMembers = [...new Set([creatorEmail, ...memberIds])];
     try {
+        const invalidUsers = yield (0, groupChatService_1.verifyUsersExist)(uniqueMembers);
+        if (invalidUsers.length > 0) {
+            res.status(400).json({ error: `Invalid users: ${invalidUsers.join(', ')}` });
+            return;
+        }
+        const group = {
+            groupId: (0, uuid_1.v4)(),
+            name,
+            members: uniqueMembers,
+            createdAt: new Date().toISOString(),
+        };
         const result = yield (0, groupChatService_1.createGroupChat)(group);
         res.status(201).json({ message: 'Group chat created', group: result });
     }
@@ -45,9 +45,9 @@ const createCustomGroupChat = (req, res) => __awaiter(void 0, void 0, void 0, fu
 exports.createCustomGroupChat = createCustomGroupChat;
 const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
-    const senderId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId;
+    const senderEmail = (_b = req.user) === null || _b === void 0 ? void 0 : _b.email;
     const { chatId, text } = req.body;
-    if (!senderId || !chatId || !text) {
+    if (!senderEmail || !chatId || !text) {
         res.status(400).json({ error: 'chatId and text are required.' });
         return;
     }
@@ -55,9 +55,9 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         const group = yield (0, groupChatService_1.getGroupById)(chatId);
         if (!group)
             throw new Error('Group not found');
-        const message = yield (0, groupChatService_1.addMessageToChat)(chatId, senderId, text);
-        const recipients = group.members.filter((id) => id !== senderId);
-        yield Promise.all(recipients.map((userId) => (0, notificationUtils_1.sendNotification)(userId, 'chat', 'New group message', `New message in ${group.name}`)));
+        const message = yield (0, groupChatService_1.addMessageToChat)(chatId, senderEmail, text);
+        const recipients = group.members.filter((email) => email !== senderEmail);
+        yield Promise.all(recipients.map((userEmail) => (0, notificationUtils_1.sendNotification)(userEmail, 'chat', 'New group message', `New message in ${group.name}`)));
         res.status(200).json({ message: 'Message sent', data: message });
     }
     catch (err) {
@@ -83,13 +83,13 @@ const fetchMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.fetchMessages = fetchMessages;
 const getMyGroups = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
-    const userId = (_c = req.user) === null || _c === void 0 ? void 0 : _c.userId;
-    if (!userId) {
+    const email = (_c = req.user) === null || _c === void 0 ? void 0 : _c.email;
+    if (!email) {
         res.status(401).json({ error: 'Unauthorized' });
         return;
     }
     try {
-        const groups = yield (0, groupChatService_1.getUserGroups)(userId);
+        const groups = yield (0, groupChatService_1.getUserGroups)(email);
         res.status(200).json({ groups });
     }
     catch (err) {
