@@ -1,28 +1,28 @@
 import {
+  DynamoDBClient,
   PutItemCommand,
   QueryCommand,
   GetItemCommand,
-  ScanCommand,
-  DynamoDBClient,
+  ScanCommand
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
-const client = new DynamoDBClient({ region: "eu-north-1" });
+const dynamo = new DynamoDBClient({ region: "eu-north-1" });
+
 const GROUP_CHATS_TABLE = "GroupChats";
 const GROUP_MESSAGES_TABLE = "GroupMessages";
+const USERS_TABLE = "SkinSenseUsers";
 
 export const createGroupChat = async (group: {
   groupId: string;
   name: string;
   members: string[];
   createdAt: string;
-  photoUrl?: string;
 }) => {
-  const cmd = new PutItemCommand({
+  await dynamo.send(new PutItemCommand({
     TableName: GROUP_CHATS_TABLE,
     Item: marshall(group),
-  });
-  await client.send(cmd);
+  }));
   return group;
 };
 
@@ -32,60 +32,61 @@ export const addMessageToChat = async (
   content: string
 ) => {
   const timestamp = new Date().toISOString();
-  const message = {
-    groupId,
-    timestamp,
-    senderId,
-    content,
-  };
+  const message = { groupId, timestamp, senderId, content };
 
-  const cmd = new PutItemCommand({
+  await dynamo.send(new PutItemCommand({
     TableName: GROUP_MESSAGES_TABLE,
     Item: marshall(message),
-  });
+  }));
 
-  await client.send(cmd);
   return message;
 };
 
 export const getChatMessages = async (groupId: string) => {
-  const cmd = new QueryCommand({
+  const result = await dynamo.send(new QueryCommand({
     TableName: GROUP_MESSAGES_TABLE,
     KeyConditionExpression: "groupId = :groupId",
     ExpressionAttributeValues: {
       ":groupId": { S: groupId },
     },
     ScanIndexForward: true,
-  });
+  }));
 
-  const result = await client.send(cmd);
-  return result.Items?.map((item) => unmarshall(item)) || [];
+  return result.Items?.map(item => unmarshall(item)) || [];
 };
 
 export const getGroupById = async (groupId: string) => {
-  const cmd = new GetItemCommand({
+  const result = await dynamo.send(new GetItemCommand({
     TableName: GROUP_CHATS_TABLE,
     Key: {
       groupId: { S: groupId },
     },
-  });
+  }));
 
-  const result = await client.send(cmd);
-  if (!result.Item) {
-    throw new Error("Group not found");
-  }
-
+  if (!result.Item) throw new Error("Group not found");
   return unmarshall(result.Item);
 };
 
-export const getGroupsForUser = async (userId: string) => {
-  const scanCommand = new ScanCommand({
+export const getUserGroups = async (userId: string) => {
+  const result = await dynamo.send(new ScanCommand({
     TableName: GROUP_CHATS_TABLE,
-  });
+  }));
 
-  const result = await client.send(scanCommand);
+  return (result.Items || [])
+    .map(item => unmarshall(item))
+    .filter(group => group.members.includes(userId));
+};
 
-  const allGroups = result.Items?.map((item) => unmarshall(item)) || [];
+export const verifyUsersExist = async (userIds: string[]): Promise<string[]> => {
+  const invalid: string[] = [];
 
-  return allGroups.filter((group) => group.members?.includes(userId));
+  for (const userId of userIds) {
+    const res = await dynamo.send(new GetItemCommand({
+      TableName: USERS_TABLE,
+      Key: { userId: { S: userId } },
+    }));
+    if (!res.Item) invalid.push(userId);
+  }
+
+  return invalid;
 };

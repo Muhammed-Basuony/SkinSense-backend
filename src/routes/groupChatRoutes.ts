@@ -1,20 +1,28 @@
 import express from "express";
 import { authenticateToken } from "../middleware/authMiddleware";
 import {
-  startGroupChat,
+  createCustomGroupChat,
   sendMessage,
   fetchMessages,
-  listUserGroups,
-  createCustomGroupChat,
+  getMyGroups,
 } from "../controllers/groupChatController";
+
+
 
 const router = express.Router();
 
 /**
  * @swagger
+ * tags:
+ *   name: Group Chat
+ *   description: Group chat operations for SkinSense users
+ */
+
+/**
+ * @swagger
  * /api/group-chat/create:
  *   post:
- *     summary: Create a new group chat
+ *     summary: Create a new custom group chat
  *     tags: [Group Chat]
  *     security:
  *       - bearerAuth: []
@@ -24,17 +32,27 @@ const router = express.Router();
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
+ *               - memberIds
  *             properties:
- *               participantIds:
+ *               name:
+ *                 type: string
+ *                 example: "Acne Help Group"
+ *               memberIds:
  *                 type: array
  *                 items:
  *                   type: string
- *                 example: ["user1", "user2"]
+ *                 example: ["user123", "user456"]
  *     responses:
  *       201:
- *         description: Group chat created successfully
+ *         description: Group chat created
+ *       400:
+ *         description: Validation error
+ *       500:
+ *         description: Server error
  */
-router.post("/create", authenticateToken, startGroupChat);
+router.post("/create", authenticateToken, createCustomGroupChat);
 
 /**
  * @swagger
@@ -50,16 +68,23 @@ router.post("/create", authenticateToken, startGroupChat);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - chatId
+ *               - text
  *             properties:
  *               chatId:
  *                 type: string
- *                 example: "chat123"
+ *                 example: "group-123"
  *               text:
  *                 type: string
- *                 example: "Hello everyone!"
+ *                 example: "Hello group!"
  *     responses:
  *       200:
  *         description: Message sent successfully
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Server error
  */
 router.post("/send", authenticateToken, sendMessage);
 
@@ -67,7 +92,7 @@ router.post("/send", authenticateToken, sendMessage);
  * @swagger
  * /api/group-chat/messages/{chatId}:
  *   get:
- *     summary: Fetch messages for a group chat
+ *     summary: Fetch messages from a specific group chat
  *     tags: [Group Chat]
  *     security:
  *       - bearerAuth: []
@@ -77,10 +102,14 @@ router.post("/send", authenticateToken, sendMessage);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the group chat
+ *         description: The ID of the group chat
  *     responses:
  *       200:
  *         description: List of messages
+ *       400:
+ *         description: Invalid chat ID
+ *       500:
+ *         description: Server error
  */
 router.get("/messages/:chatId", authenticateToken, fetchMessages);
 
@@ -88,67 +117,19 @@ router.get("/messages/:chatId", authenticateToken, fetchMessages);
  * @swagger
  * /api/group-chat/my-groups:
  *   get:
- *     summary: List group chats the current user belongs to
+ *     summary: Get all group chats the user is a member of
  *     tags: [Group Chat]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of group chats
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 groups:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       groupId:
- *                         type: string
- *                       name:
- *                         type: string
- *                       members:
- *                         type: array
- *                         items:
- *                           type: string
+ *         description: List of user’s group chats
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
  */
-router.get("/my-groups", authenticateToken, listUserGroups);
-
-/**
- * @swagger
- * /api/group-chat/custom:
- *   post:
- *     summary: Create a custom group chat
- *     tags: [Group Chat]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - members
- *             properties:
- *               name:
- *                 type: string
- *                 example: "Eczema Discussion"
- *               members:
- *                 type: array
- *                 items:
- *                   type: string
- *                 example: ["user1", "user2"]
- *     responses:
- *       201:
- *         description: Group chat created successfully
- *       400:
- *         description: Invalid input or user not found
- */
-router.post("/custom", authenticateToken, createCustomGroupChat);
+router.get("/my-groups", authenticateToken, getMyGroups); 
 
 
 export default router;
