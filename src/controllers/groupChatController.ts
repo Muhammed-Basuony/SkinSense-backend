@@ -7,35 +7,36 @@ import {
   getChatMessages,
   getGroupById,
   verifyUsersExist,
-  getUserGroups
+  getUserGroups,
 } from '../services/groupChatService';
 import { sendNotification } from '../utils/notificationUtils';
 
 export const createCustomGroupChat = async (req: AuthRequest, res: Response): Promise<void> => {
-  const creatorId = req.user?.userId;
+  const creatorEmail = req.user?.email; 
   const { name, memberIds } = req.body;
 
-  if (!creatorId || !name || !memberIds || !Array.isArray(memberIds)) {
+  if (!creatorEmail || !name || !memberIds || !Array.isArray(memberIds)) {
     res.status(400).json({ error: 'Group name and memberIds are required.' });
     return;
   }
 
-  const uniqueMembers = [...new Set([creatorId, ...memberIds])];
-  const invalidUsers = await verifyUsersExist(uniqueMembers);
-
-  if (invalidUsers.length > 0) {
-    res.status(400).json({ error: `Invalid users: ${invalidUsers.join(', ')}` });
-    return;
-  }
-
-  const group = {
-    groupId: uuidv4(),
-    name,
-    members: uniqueMembers,
-    createdAt: new Date().toISOString(),
-  };
+  const uniqueMembers = [...new Set([creatorEmail, ...memberIds])];
 
   try {
+    const invalidUsers = await verifyUsersExist(uniqueMembers);
+
+    if (invalidUsers.length > 0) {
+      res.status(400).json({ error: `Invalid users: ${invalidUsers.join(', ')}` });
+      return;
+    }
+
+    const group = {
+      groupId: uuidv4(),
+      name,
+      members: uniqueMembers,
+      createdAt: new Date().toISOString(),
+    };
+
     const result = await createGroupChat(group);
     res.status(201).json({ message: 'Group chat created', group: result });
   } catch (err) {
@@ -45,10 +46,10 @@ export const createCustomGroupChat = async (req: AuthRequest, res: Response): Pr
 };
 
 export const sendMessage = async (req: AuthRequest, res: Response): Promise<void> => {
-  const senderId = req.user?.userId;
+  const senderEmail = req.user?.email; 
   const { chatId, text } = req.body;
 
-  if (!senderId || !chatId || !text) {
+  if (!senderEmail || !chatId || !text) {
     res.status(400).json({ error: 'chatId and text are required.' });
     return;
   }
@@ -57,12 +58,12 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
     const group = await getGroupById(chatId);
     if (!group) throw new Error('Group not found');
 
-    const message = await addMessageToChat(chatId, senderId, text);
-    const recipients = group.members.filter((id: string) => id !== senderId);
+    const message = await addMessageToChat(chatId, senderEmail, text);
+    const recipients = group.members.filter((email: string) => email !== senderEmail);
 
     await Promise.all(
-      recipients.map((userId: string) =>
-        sendNotification(userId, 'chat', 'New group message', `New message in ${group.name}`)
+      recipients.map((userEmail: string) =>
+        sendNotification(userEmail, 'chat', 'New group message', `New message in ${group.name}`)
       )
     );
 
@@ -89,14 +90,14 @@ export const fetchMessages = async (req: AuthRequest, res: Response): Promise<vo
 };
 
 export const getMyGroups = async (req: AuthRequest, res: Response): Promise<void> => {
-  const userId = req.user?.userId;
-  if (!userId) {
+  const email = req.user?.email;
+  if (!email) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
 
   try {
-    const groups = await getUserGroups(userId);
+    const groups = await getUserGroups(email); 
     res.status(200).json({ groups });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch groups.' });

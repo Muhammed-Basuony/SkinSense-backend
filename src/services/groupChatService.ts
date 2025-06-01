@@ -14,7 +14,7 @@ const GROUP_CHATS_TABLE = "GroupChats";
 const GROUP_MESSAGES_TABLE = "GroupMessages";
 const USERS_TABLE = "SkinSenseUsers";
 
-// Create a group chat
+
 export const createGroupChat = async (group: {
   groupId: string;
   name: string;
@@ -28,7 +28,7 @@ export const createGroupChat = async (group: {
   return group;
 };
 
-// Add a message to a chat with unique messageId
+
 export const addMessageToChat = async (
   groupId: string,
   senderId: string,
@@ -51,7 +51,7 @@ export const addMessageToChat = async (
   return message;
 };
 
-// Get messages for a group chat
+
 export const getChatMessages = async (groupId: string) => {
   const result = await dynamo.send(new QueryCommand({
     TableName: GROUP_MESSAGES_TABLE,
@@ -65,7 +65,7 @@ export const getChatMessages = async (groupId: string) => {
   return result.Items?.map(item => unmarshall(item)) || [];
 };
 
-// Get a group by ID
+
 export const getGroupById = async (groupId: string) => {
   const result = await dynamo.send(new GetItemCommand({
     TableName: GROUP_CHATS_TABLE,
@@ -77,7 +77,7 @@ export const getGroupById = async (groupId: string) => {
   return result.Item ? unmarshall(result.Item) : null;
 };
 
-// Get all groups that a user is a member of
+
 export const getUserGroups = async (userId: string) => {
   const result = await dynamo.send(new ScanCommand({
     TableName: GROUP_CHATS_TABLE,
@@ -88,17 +88,32 @@ export const getUserGroups = async (userId: string) => {
     .filter(group => group.members.includes(userId));
 };
 
-// Verify if all given users exist
-export const verifyUsersExist = async (userIds: string[]): Promise<string[]> => {
+export const verifyUsersExist = async (emails: string[]): Promise<string[]> => {
   const invalid: string[] = [];
 
-  for (const userId of userIds) {
-    const res = await dynamo.send(new GetItemCommand({
-      TableName: USERS_TABLE,
-      Key: { userId: { S: userId } },
-    }));
-    if (!res.Item) invalid.push(userId);
+  for (const email of emails) {
+    try {
+      console.log(`🔍 Verifying email: ${email}`);
+
+      const res = await dynamo.send(
+        new GetItemCommand({
+          TableName: USERS_TABLE,
+          Key: {
+            email: { S: email }, 
+          },
+        })
+      );
+
+      if (!res.Item) {
+        console.warn(`❌ User not found in DB: ${email}`);
+        invalid.push(email);
+      }
+    } catch (err: any) {
+      console.error(`❌ Error checking user "${email}":`, err.message);
+      invalid.push(email); // still count as invalid
+    }
   }
 
   return invalid;
 };
+
