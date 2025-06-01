@@ -7,8 +7,6 @@ import {
   getMyGroups,
 } from "../controllers/groupChatController";
 
-
-
 const router = express.Router();
 
 /**
@@ -83,6 +81,8 @@ router.post("/create", authenticateToken, createCustomGroupChat);
  *         description: Message sent successfully
  *       400:
  *         description: Bad request
+ *       404:
+ *         description: Group not found
  *       500:
  *         description: Server error
  */
@@ -129,7 +129,6 @@ router.get("/messages/:chatId", authenticateToken, fetchMessages);
  *       500:
  *         description: Server error
  */
-router.get("/my-groups", authenticateToken, getMyGroups); 
-
+router.get("/my-groups", authenticateToken, getMyGroups);
 
 export default router;

@@ -3,9 +3,10 @@ import {
   PutItemCommand,
   QueryCommand,
   GetItemCommand,
-  ScanCommand
+  ScanCommand,
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
+import { v4 as uuidv4 } from "uuid";
 
 const dynamo = new DynamoDBClient({ region: "eu-north-1" });
 
@@ -13,6 +14,7 @@ const GROUP_CHATS_TABLE = "GroupChats";
 const GROUP_MESSAGES_TABLE = "GroupMessages";
 const USERS_TABLE = "SkinSenseUsers";
 
+// Create a group chat
 export const createGroupChat = async (group: {
   groupId: string;
   name: string;
@@ -26,13 +28,20 @@ export const createGroupChat = async (group: {
   return group;
 };
 
+// Add a message to a chat with unique messageId
 export const addMessageToChat = async (
   groupId: string,
   senderId: string,
   content: string
 ) => {
   const timestamp = new Date().toISOString();
-  const message = { groupId, timestamp, senderId, content };
+  const message = {
+    groupId,
+    messageId: uuidv4(),
+    timestamp,
+    senderId,
+    content,
+  };
 
   await dynamo.send(new PutItemCommand({
     TableName: GROUP_MESSAGES_TABLE,
@@ -42,6 +51,7 @@ export const addMessageToChat = async (
   return message;
 };
 
+// Get messages for a group chat
 export const getChatMessages = async (groupId: string) => {
   const result = await dynamo.send(new QueryCommand({
     TableName: GROUP_MESSAGES_TABLE,
@@ -55,6 +65,7 @@ export const getChatMessages = async (groupId: string) => {
   return result.Items?.map(item => unmarshall(item)) || [];
 };
 
+// Get a group by ID
 export const getGroupById = async (groupId: string) => {
   const result = await dynamo.send(new GetItemCommand({
     TableName: GROUP_CHATS_TABLE,
@@ -63,10 +74,10 @@ export const getGroupById = async (groupId: string) => {
     },
   }));
 
-  if (!result.Item) throw new Error("Group not found");
-  return unmarshall(result.Item);
+  return result.Item ? unmarshall(result.Item) : null;
 };
 
+// Get all groups that a user is a member of
 export const getUserGroups = async (userId: string) => {
   const result = await dynamo.send(new ScanCommand({
     TableName: GROUP_CHATS_TABLE,
@@ -77,6 +88,7 @@ export const getUserGroups = async (userId: string) => {
     .filter(group => group.members.includes(userId));
 };
 
+// Verify if all given users exist
 export const verifyUsersExist = async (userIds: string[]): Promise<string[]> => {
   const invalid: string[] = [];
 

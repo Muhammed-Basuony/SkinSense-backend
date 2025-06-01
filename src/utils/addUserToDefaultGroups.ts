@@ -3,7 +3,7 @@ import {
   PutItemCommand,
   ScanCommand,
 } from "@aws-sdk/client-dynamodb";
-import { marshall } from "@aws-sdk/util-dynamodb";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
 const dynamo = new DynamoDBClient({ region: "eu-north-1" });
 const GROUP_CHATS_TABLE = "GroupChats";
@@ -28,31 +28,24 @@ const getGroupByName = async (name: string) => {
 
 export const addUserToDefaultGroups = async (userId: string) => {
   for (const groupName of DEFAULT_GROUP_NAMES) {
-    const group = await getGroupByName(groupName);
-    if (!group) {
+    const groupRaw = await getGroupByName(groupName);
+    if (!groupRaw) {
       console.warn(`⚠️ Group '${groupName}' not found`);
       continue;
     }
 
-   
-    const members = (group.members?.L || [])
-      .map((m) => m.S)
-      .filter((id): id is string => !!id); 
+    const group = unmarshall(groupRaw);
+    const members: string[] = group.members || [];
 
-   
     if (!members.includes(userId)) {
       members.push(userId);
+      group.members = members;
 
-      group.members = {
-        L: members.map((id) => ({ S: id })),
-      };
-
-      const updateCmd = new PutItemCommand({
+      await dynamo.send(new PutItemCommand({
         TableName: GROUP_CHATS_TABLE,
-        Item: group,
-      });
+        Item: marshall(group),
+      }));
 
-      await dynamo.send(updateCmd);
       console.log(`✅ Added ${userId} to ${groupName}`);
     }
   }
