@@ -7,8 +7,10 @@ import {
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
 const dynamo = new DynamoDBClient({ region: "eu-north-1" });
+
 const GROUP_CHATS_TABLE = "GroupChats";
 const GROUP_MESSAGES_TABLE = "GroupMessages";
+
 
 export const createGroupChat = async (group: {
   groupId: string;
@@ -25,6 +27,7 @@ export const createGroupChat = async (group: {
   return group;
 };
 
+
 export const addMessageToChat = async (
   groupId: string,
   senderId: string,
@@ -38,14 +41,22 @@ export const addMessageToChat = async (
     content,
   };
 
-  const cmd = new PutItemCommand({
-    TableName: GROUP_MESSAGES_TABLE,
-    Item: marshall(message),
-  });
+  console.log("💬 Sending message to DynamoDB:", message);
 
-  await dynamo.send(cmd);
-  return message;
+  try {
+    const cmd = new PutItemCommand({
+      TableName: GROUP_MESSAGES_TABLE,
+      Item: marshall(message),
+    });
+
+    await dynamo.send(cmd);
+    return message;
+  } catch (err) {
+    console.error("❌ Failed to add message to chat:", err);
+    throw err;
+  }
 };
+
 
 export const getChatMessages = async (groupId: string) => {
   const cmd = new QueryCommand({
@@ -54,12 +65,13 @@ export const getChatMessages = async (groupId: string) => {
     ExpressionAttributeValues: {
       ":groupId": { S: groupId },
     },
-    ScanIndexForward: true,
+    ScanIndexForward: true, 
   });
 
   const result = await dynamo.send(cmd);
   return result.Items?.map((item) => unmarshall(item)) || [];
 };
+
 
 export const getGroupById = async (groupId: string) => {
   const cmd = new GetItemCommand({
