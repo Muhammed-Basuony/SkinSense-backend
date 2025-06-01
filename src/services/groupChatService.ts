@@ -14,7 +14,6 @@ const GROUP_CHATS_TABLE = "GroupChats";
 const GROUP_MESSAGES_TABLE = "GroupMessages";
 const USERS_TABLE = "SkinSenseUsers";
 
-
 export const createGroupChat = async (group: {
   groupId: string;
   name: string;
@@ -39,10 +38,10 @@ export const addMessageToChat = async (
   const timestamp = new Date().toISOString();
 
   const message = {
-    groupId,               
-    timestamp,             
-    senderId,              
-    content,               
+    groupId,      
+    timestamp,    
+    senderId,
+    content,
   };
 
   await dynamo.send(
@@ -54,6 +53,7 @@ export const addMessageToChat = async (
 
   return message;
 };
+
 
 export const getChatMessages = async (groupId: string) => {
   const result = await dynamo.send(
@@ -84,6 +84,7 @@ export const getGroupById = async (groupId: string) => {
   return result.Item ? unmarshall(result.Item) : null;
 };
 
+
 export const getUserGroups = async (userId: string) => {
   const result = await dynamo.send(
     new ScanCommand({
@@ -103,7 +104,6 @@ export const verifyUsersExist = async (emails: string[]): Promise<string[]> => {
   for (const email of emails) {
     try {
       console.log(`🔍 Verifying email: ${email}`);
-
       const res = await dynamo.send(
         new GetItemCommand({
           TableName: USERS_TABLE,

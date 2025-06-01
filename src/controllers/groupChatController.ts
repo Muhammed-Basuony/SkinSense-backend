@@ -50,7 +50,7 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
   const { groupId, text } = req.body;
 
   if (!senderEmail || !groupId || !text) {
-    res.status(400).json({ error: 'chatId and text are required.' });
+    res.status(400).json({ error: 'groupId and text are required.' });
     return;
   }
 
