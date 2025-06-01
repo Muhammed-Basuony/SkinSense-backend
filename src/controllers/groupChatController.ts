@@ -9,7 +9,6 @@ import {
 } from "../services/groupChatService";
 import { sendNotification } from "../utils/notificationUtils";
 
-
 export const startGroupChat = async (req: AuthRequest, res: Response): Promise<void> => {
   const userId = req.user?.userId;
   const { participantIds } = req.body;
@@ -34,6 +33,7 @@ export const startGroupChat = async (req: AuthRequest, res: Response): Promise<v
   } catch (err) {
     console.error("Error starting group chat:", err);
     res.status(500).json({ error: "Failed to create group chat." });
+    return;
   }
 };
 
@@ -53,6 +53,7 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
 
     const group = await getGroupById(chatId);
     if (!group || !group.members) {
+      console.error("Group not found or has no members:", group);
       res.status(404).json({ error: "Group not found." });
       return;
     }
@@ -74,9 +75,9 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
   } catch (err) {
     console.error("Error sending message:", err);
     res.status(500).json({ error: "Failed to send message." });
+    return;
   }
 };
-
 
 export const fetchMessages = async (req: AuthRequest, res: Response): Promise<void> => {
   const { chatId } = req.params;
@@ -92,6 +93,6 @@ export const fetchMessages = async (req: AuthRequest, res: Response): Promise<vo
   } catch (err) {
     console.error("Error fetching messages:", err);
     res.status(500).json({ error: "Failed to fetch messages." });
+    return;
   }
 };
-
