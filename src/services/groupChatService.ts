@@ -37,9 +37,10 @@ export const addMessageToChat = async (
   content: string
 ) => {
   const timestamp = new Date().toISOString(); 
+
   const message = {
-    groupId,
-    timestamp,              
+    groupId,               
+    timestamp,             
     senderId,
     content,
   };
@@ -53,6 +54,7 @@ export const addMessageToChat = async (
 
   return message;
 };
+
 
 
 
