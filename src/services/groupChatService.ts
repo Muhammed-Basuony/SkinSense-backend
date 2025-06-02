@@ -41,6 +41,7 @@ export const addMessageToChat = async (
     senderId: { S: senderId},
     content: { S: content},
   };
+   console.log("📦 Message to insert into DynamoDB:", message);
 
   await dynamo.send(
     new PutItemCommand({
@@ -49,7 +50,7 @@ export const addMessageToChat = async (
     })
   );
 
-   console.log("📦 Message to insert into DynamoDB:", message);
+  
 
   return message;
 };

@@ -57,6 +57,9 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
   try {
     const group = await getGroupById(groupId);
     if (!group) throw new Error('Group not found');
+    
+     
+
 
     const message = await addMessageToChat(groupId, senderEmail, text);
     const recipients = group.members.filter((email: string) => email !== senderEmail);
@@ -66,7 +69,7 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
         sendNotification(userEmail, 'chat', 'New group message', `New message in ${group.name}`)
       )
     );
-
+    
     res.status(200).json({ message: 'Message sent', data: message });
   } catch (err) {
     console.error('Send message error:', err);
