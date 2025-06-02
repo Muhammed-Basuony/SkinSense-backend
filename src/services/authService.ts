@@ -136,7 +136,7 @@ export class AuthService {
       TableName: CODES_TABLE,
       Key: {
         email: { S: email },
-        code: { S: code }, // ✅ Fix: use sort key too
+        code: { S: code }, 
       },
     });
 
