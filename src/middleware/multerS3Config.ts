@@ -17,8 +17,9 @@ const s3 = new S3Client({
 const s3Uploader = multer({
   storage: multerS3({
     s3,
-    bucket: process.env.S3_BUCKET_NAME!, 
-    acl: 'public-read',
+    bucket: process.env.AWS_S3_BUCKET!,
+  
+    contentType: multerS3.AUTO_CONTENT_TYPE,
     metadata: (_req: Request, file: Express.Multer.File, cb) => {
       cb(null, { fieldName: file.fieldname });
     },
