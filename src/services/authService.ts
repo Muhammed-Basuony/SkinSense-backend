@@ -114,7 +114,7 @@ export class AuthService {
     if (!user) throw new Error("User not found");
 
     const code = Math.floor(1000 + Math.random() * 9000).toString();
-    const expiration = Math.floor(Date.now() / 1000) + 300; // 5 mins
+    const expiration = Math.floor(Date.now() / 1000) + 300; // 5 minutes
 
     const command = new PutItemCommand({
       TableName: CODES_TABLE,
@@ -134,7 +134,10 @@ export class AuthService {
   async verifyResetCode(email: string, code: string) {
     const getCommand = new GetItemCommand({
       TableName: CODES_TABLE,
-      Key: { email: { S: email } },
+      Key: {
+        email: { S: email },
+        code: { S: code }, // ✅ Fix: use sort key too
+      },
     });
 
     const result = await dynamo.send(getCommand);
@@ -184,7 +187,7 @@ export class AuthService {
   private async getUserByEmail(email: string): Promise<User | null> {
     const command = new QueryCommand({
       TableName: USERS_TABLE,
-      IndexName: "email-index", // ⚠️ You must create this GSI
+      IndexName: "email-index", // ✅ uses the GSI correctly
       KeyConditionExpression: "email = :email",
       ExpressionAttributeValues: {
         ":email": { S: email },
