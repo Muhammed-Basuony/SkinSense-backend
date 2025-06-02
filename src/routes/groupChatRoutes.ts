@@ -41,7 +41,7 @@ const router = express.Router();
  *                 type: array
  *                 items:
  *                   type: string
- *                 example: ["user123", "user456"]
+ *                 example: ["user1@example.com", "user2@example.com"]
  *     responses:
  *       201:
  *         description: Group chat created
@@ -67,12 +67,12 @@ router.post("/create", authenticateToken, createCustomGroupChat);
  *           schema:
  *             type: object
  *             required:
- *               - chatId
+ *               - groupId
  *               - text
  *             properties:
- *               chatId:
+ *               groupId:
  *                 type: string
- *                 example: "group-123"
+ *                 example: "group-uuid-123"
  *               text:
  *                 type: string
  *                 example: "Hello group!"
@@ -81,8 +81,6 @@ router.post("/create", authenticateToken, createCustomGroupChat);
  *         description: Message sent successfully
  *       400:
  *         description: Bad request
- *       404:
- *         description: Group not found
  *       500:
  *         description: Server error
  */
@@ -90,14 +88,14 @@ router.post("/send", authenticateToken, sendMessage);
 
 /**
  * @swagger
- * /api/group-chat/messages/{chatId}:
+ * /api/group-chat/messages/{groupId}:
  *   get:
  *     summary: Fetch messages from a specific group chat
  *     tags: [Group Chat]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: chatId
+ *       - name: groupId
  *         in: path
  *         required: true
  *         schema:
@@ -107,11 +105,12 @@ router.post("/send", authenticateToken, sendMessage);
  *       200:
  *         description: List of messages
  *       400:
- *         description: Invalid chat ID
+ *         description: Invalid group ID
  *       500:
  *         description: Server error
  */
-router.get("/messages/:chatId", authenticateToken, fetchMessages);
+router.get("/messages/:groupId", authenticateToken, fetchMessages);
+
 
 /**
  * @swagger

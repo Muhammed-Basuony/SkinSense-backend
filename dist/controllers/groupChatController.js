@@ -46,16 +46,16 @@ exports.createCustomGroupChat = createCustomGroupChat;
 const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const senderEmail = (_b = req.user) === null || _b === void 0 ? void 0 : _b.email;
-    const { chatId, text } = req.body;
-    if (!senderEmail || !chatId || !text) {
-        res.status(400).json({ error: 'chatId and text are required.' });
+    const { groupId, text } = req.body;
+    if (!senderEmail || !groupId || !text) {
+        res.status(400).json({ error: 'groupId and text are required.' });
         return;
     }
     try {
-        const group = yield (0, groupChatService_1.getGroupById)(chatId);
+        const group = yield (0, groupChatService_1.getGroupById)(groupId);
         if (!group)
             throw new Error('Group not found');
-        const message = yield (0, groupChatService_1.addMessageToChat)(chatId, senderEmail, text);
+        const message = yield (0, groupChatService_1.addMessageToChat)(groupId, senderEmail, text);
         const recipients = group.members.filter((email) => email !== senderEmail);
         yield Promise.all(recipients.map((userEmail) => (0, notificationUtils_1.sendNotification)(userEmail, 'chat', 'New group message', `New message in ${group.name}`)));
         res.status(200).json({ message: 'Message sent', data: message });

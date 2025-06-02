@@ -40,7 +40,7 @@ export const addMessageToChat = async (
   const message = {
     groupId,      
     timestamp,    
-    senderId,
+    senderId, 
     content,
   };
 

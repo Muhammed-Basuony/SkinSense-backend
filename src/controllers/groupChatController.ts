@@ -46,7 +46,7 @@ export const createCustomGroupChat = async (req: AuthRequest, res: Response): Pr
 };
 
 export const sendMessage = async (req: AuthRequest, res: Response): Promise<void> => {
-  const senderEmail = req.user?.email; 
+  const senderEmail = req.user?.email;
   const { groupId, text } = req.body;
 
   if (!senderEmail || !groupId || !text) {
@@ -75,19 +75,21 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
 };
 
 export const fetchMessages = async (req: AuthRequest, res: Response): Promise<void> => {
-  const { chatId } = req.params;
-  if (!chatId) {
-    res.status(400).json({ error: 'chatId required' });
+  const { groupId } = req.params;
+  if (!groupId) {
+    res.status(400).json({ error: 'groupId is required' });
     return;
   }
 
   try {
-    const messages = await getChatMessages(chatId);
+    const messages = await getChatMessages(groupId);
     res.status(200).json({ messages });
   } catch (err) {
+    console.error('Fetch messages error:', err);
     res.status(500).json({ error: 'Failed to fetch messages.' });
   }
 };
+
 
 export const getMyGroups = async (req: AuthRequest, res: Response): Promise<void> => {
   const email = req.user?.email;
@@ -97,7 +99,7 @@ export const getMyGroups = async (req: AuthRequest, res: Response): Promise<void
   }
 
   try {
-    const groups = await getUserGroups(email); 
+    const groups = await getUserGroups(email);
     res.status(200).json({ groups });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch groups.' });
