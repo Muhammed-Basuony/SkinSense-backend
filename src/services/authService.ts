@@ -4,6 +4,7 @@ import {
   GetItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { sendVerificationCodeEmail } from "../utils/emailService";
 import { User, generateUserId } from "../models/User.models";
@@ -12,7 +13,8 @@ dotenv.config();
 
 const dynamo = new DynamoDBClient({ region: "eu-north-1" });
 const USERS_TABLE = "SkinSenseUsers";
-const CODES_TABLE = "SkinSenseResetCodes"; // New table
+const CODES_TABLE = "SkinSenseResetCodes";
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret";
 
 export class AuthService {
   async signup(data: { name: string; email: string; password: string }) {
@@ -56,11 +58,23 @@ export class AuthService {
 
     await dynamo.send(putCommand);
 
+    const token = jwt.sign({ userId, email }, JWT_SECRET, { expiresIn: "2h" });
+
     return {
+      token,
       userId,
       email,
       name,
-      token: null,
+      age: null,
+      gender: null,
+      bloodType: null,
+      phone: null,
+      photoUrl: null,
+      location: {
+        latitude: null,
+        longitude: null,
+        address: null,
+      },
     };
   }
 
@@ -72,10 +86,25 @@ export class AuthService {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new Error("Invalid email or password");
 
+    const token = jwt.sign({ userId: user.userId, email: user.email }, JWT_SECRET, {
+      expiresIn: "2h",
+    });
+
     return {
+      token,
       userId: user.userId,
       email: user.email,
       name: user.name ?? null,
+      age: user.age ?? null,
+      gender: user.gender ?? null,
+      bloodType: user.bloodType ?? null,
+      phone: user.phone ?? null,
+      photoUrl: user.photoUrl ?? null,
+      location: user.location ?? {
+        latitude: null,
+        longitude: null,
+        address: null,
+      },
     };
   }
 
@@ -84,7 +113,7 @@ export class AuthService {
     if (!user) throw new Error("User not found");
 
     const code = Math.floor(1000 + Math.random() * 9000).toString();
-    const expiration = Math.floor(Date.now() / 1000) + 300; // 5 mins from now
+    const expiration = Math.floor(Date.now() / 1000) + 300; // 5 mins
 
     const command = new PutItemCommand({
       TableName: CODES_TABLE,

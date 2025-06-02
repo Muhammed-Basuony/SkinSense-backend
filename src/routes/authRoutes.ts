@@ -53,6 +53,51 @@ const handleValidation = (req: Request, res: Response, next: NextFunction): void
  *     responses:
  *       201:
  *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 result:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                     userId:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     age:
+ *                       type: number
+ *                       nullable: true
+ *                     gender:
+ *                       type: string
+ *                       nullable: true
+ *                     bloodType:
+ *                       type: string
+ *                       nullable: true
+ *                     phone:
+ *                       type: string
+ *                       nullable: true
+ *                     photoUrl:
+ *                       type: string
+ *                       nullable: true
+ *                     location:
+ *                       type: object
+ *                       properties:
+ *                         latitude:
+ *                           type: number
+ *                           nullable: true
+ *                         longitude:
+ *                           type: number
+ *                           nullable: true
+ *                         address:
+ *                           type: string
+ *                           nullable: true
  *       400:
  *         description: Validation error
  */
@@ -83,6 +128,51 @@ router.post('/signup', signupValidation, handleValidation, (req: Request, res: R
  *     responses:
  *       200:
  *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 result:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                     userId:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     age:
+ *                       type: number
+ *                       nullable: true
+ *                     gender:
+ *                       type: string
+ *                       nullable: true
+ *                     bloodType:
+ *                       type: string
+ *                       nullable: true
+ *                     phone:
+ *                       type: string
+ *                       nullable: true
+ *                     photoUrl:
+ *                       type: string
+ *                       nullable: true
+ *                     location:
+ *                       type: object
+ *                       properties:
+ *                         latitude:
+ *                           type: number
+ *                           nullable: true
+ *                         longitude:
+ *                           type: number
+ *                           nullable: true
+ *                         address:
+ *                           type: string
+ *                           nullable: true
  *       401:
  *         description: Invalid credentials
  */
