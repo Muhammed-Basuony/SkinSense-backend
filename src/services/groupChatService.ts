@@ -40,8 +40,8 @@ export const addMessageToChat = async (
  const message = {
   groupId: groupId.toString(),
   timestamp: timestamp.toString(),
-  senderId,
-  content,
+  senderId: senderId.toString(),
+  content: content.toString(),
 };
 
    console.log("📦 Message to insert into DynamoDB:", message);
