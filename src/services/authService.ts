@@ -1,20 +1,22 @@
-import { DynamoDBClient, PutItemCommand, GetItemCommand } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBClient,
+  PutItemCommand,
+  GetItemCommand,
+} from "@aws-sdk/client-dynamodb";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { sendResetEmail } from "../utils/emailService";
+import { sendVerificationCodeEmail } from "../utils/emailService";
 import { User, generateUserId } from "../models/User.models";
 
 dotenv.config();
 
 const dynamo = new DynamoDBClient({ region: "eu-north-1" });
 const USERS_TABLE = "SkinSenseUsers";
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret";
+const CODES_TABLE = "SkinSenseResetCodes"; // New table
 
 export class AuthService {
   async signup(data: { name: string; email: string; password: string }) {
     const { name, email, password } = data;
-
     const existing = await this.getUserByEmail(email);
     if (existing) throw new Error("User already exists");
 
@@ -54,23 +56,11 @@ export class AuthService {
 
     await dynamo.send(putCommand);
 
-    const token = jwt.sign({ userId, email }, JWT_SECRET, { expiresIn: "2h" });
-
     return {
-      token,
-      userId: newUser.userId,
-      email: newUser.email,
-      name: newUser.name,
-      age: null,
-      gender: null,
-      bloodType: null,
-      phone: null,
-      photoUrl: null,
-      location: {
-        latitude: null,
-        longitude: null,
-        address: null,
-      },
+      userId,
+      email,
+      name,
+      token: null,
     };
   }
 
@@ -82,59 +72,65 @@ export class AuthService {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new Error("Invalid email or password");
 
-    const token = jwt.sign({ userId: user.userId, email: user.email }, JWT_SECRET, { expiresIn: "2h" });
-
     return {
-      token,
       userId: user.userId,
       email: user.email,
       name: user.name ?? null,
-      age: user.age ?? null,
-      gender: user.gender ?? null,
-      bloodType: user.bloodType ?? null,
-      phone: user.phone ?? null,
-      photoUrl: user.photoUrl ?? null,
-      location: user.location ?? {
-        latitude: null,
-        longitude: null,
-        address: null,
-      },
     };
   }
 
-  async forgotPassword(email: string) {
+  async sendResetCode(email: string) {
     const user = await this.getUserByEmail(email);
     if (!user) throw new Error("User not found");
 
-    const token = jwt.sign({ userId: user.userId, email: user.email }, JWT_SECRET, {
-      expiresIn: "15m",
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    const expiration = Math.floor(Date.now() / 1000) + 300; // 5 mins from now
+
+    const command = new PutItemCommand({
+      TableName: CODES_TABLE,
+      Item: {
+        email: { S: email },
+        code: { S: code },
+        expiresAt: { N: expiration.toString() },
+      },
     });
 
-    await sendResetEmail(email, token);
+    await dynamo.send(command);
+    await sendVerificationCodeEmail(email, code);
 
-    return "Reset password link sent to your email";
+    return "Verification code sent to email.";
   }
 
-  async resetPassword(data: { email: string; token: string; newPassword: string }) {
-    const { email, token, newPassword } = data;
+  async verifyResetCode(email: string, code: string) {
+    const getCommand = new GetItemCommand({
+      TableName: CODES_TABLE,
+      Key: { email: { S: email } },
+    });
 
-    let decoded: any;
-    try {
-      decoded = jwt.verify(token, JWT_SECRET);
-      if (decoded.email !== email) throw new Error("Token does not match the provided email");
-    } catch (err: any) {
-      if (err.name === "TokenExpiredError") {
-        throw new Error("Reset token has expired. Please request a new one.");
-      }
-      throw new Error("Invalid or expired token.");
-    }
+    const result = await dynamo.send(getCommand);
+    if (!result.Item) throw new Error("No code found for this email");
+
+    const storedCode = result.Item.code.S;
+    const expiresAt = parseInt(result.Item.expiresAt.N || "0");
+
+    if (storedCode !== code) throw new Error("Invalid code");
+    if (Date.now() / 1000 > expiresAt) throw new Error("Code expired");
+
+    return true;
+  }
+
+  async resetPasswordWithCode(data: { email: string; code: string; newPassword: string }) {
+    const { email, code, newPassword } = data;
+
+    const valid = await this.verifyResetCode(email, code);
+    if (!valid) throw new Error("Invalid code");
 
     const user = await this.getUserByEmail(email);
     if (!user) throw new Error("User not found");
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    const updateCommand = new PutItemCommand({
+    const command = new PutItemCommand({
       TableName: USERS_TABLE,
       Item: {
         userId: { S: user.userId },
@@ -151,38 +147,33 @@ export class AuthService {
       },
     });
 
-    await dynamo.send(updateCommand);
-
+    await dynamo.send(command);
     return { userId: user.userId, email: user.email };
   }
 
   private async getUserByEmail(email: string): Promise<User | null> {
-    const getCommand = new GetItemCommand({
+    const command = new GetItemCommand({
       TableName: USERS_TABLE,
-      Key: {
-        email: { S: email },
-      },
+      Key: { email: { S: email } },
     });
 
-    const response = await dynamo.send(getCommand);
-    if (!response.Item) return null;
+    const result = await dynamo.send(command);
+    if (!result.Item) return null;
 
     return {
-      userId: response.Item.userId.S!,
-      name: response.Item.name.S!,
-      email: response.Item.email.S!,
-      password: response.Item.password.S!,
-      createdAt: response.Item.createdAt.S!,
-      age: response.Item.age?.N ? parseInt(response.Item.age.N) : null,
-      gender: response.Item.gender?.S ?? null,
-      bloodType: response.Item.bloodType?.S ?? null,
-      phone: response.Item.phone?.S ?? null,
-      photoUrl: response.Item.photoUrl?.S ?? null,
-      location: response.Item.location?.S ? JSON.parse(response.Item.location.S) : {
-        latitude: null,
-        longitude: null,
-        address: null,
-      },
+      userId: result.Item.userId.S!,
+      name: result.Item.name.S!,
+      email: result.Item.email.S!,
+      password: result.Item.password.S!,
+      createdAt: result.Item.createdAt.S!,
+      age: result.Item.age?.N ? parseInt(result.Item.age.N) : null,
+      gender: result.Item.gender?.S ?? null,
+      bloodType: result.Item.bloodType?.S ?? null,
+      phone: result.Item.phone?.S ?? null,
+      photoUrl: result.Item.photoUrl?.S ?? null,
+      location: result.Item.location?.S
+        ? JSON.parse(result.Item.location.S)
+        : { latitude: null, longitude: null, address: null },
     };
   }
 }

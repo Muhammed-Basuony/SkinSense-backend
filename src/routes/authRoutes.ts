@@ -92,9 +92,9 @@ router.post('/login', loginValidation, handleValidation, (req: Request, res: Res
 
 /**
  * @swagger
- * /api/auth/forgot-password:
+ * /api/auth/send-reset-code:
  *   post:
- *     summary: Send password reset email
+ *     summary: Send 4-digit password reset code to user's email
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -109,19 +109,19 @@ router.post('/login', loginValidation, handleValidation, (req: Request, res: Res
  *                 type: string
  *     responses:
  *       200:
- *         description: Reset password email sent
+ *         description: Code sent
  *       400:
- *         description: Validation error or user not found
+ *         description: Error
  */
-router.post('/forgot-password', (req: Request, res: Response) => {
-  authController.forgotPassword(req, res);
+router.post('/send-reset-code', (req: Request, res: Response) => {
+  authController.sendResetCode(req, res);
 });
 
 /**
  * @swagger
- * /api/auth/reset-password:
+ * /api/auth/verify-reset-code:
  *   post:
- *     summary: Reset password using token
+ *     summary: Verify 4-digit code for password reset
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -131,13 +131,43 @@ router.post('/forgot-password', (req: Request, res: Response) => {
  *             type: object
  *             required:
  *               - email
- *               - token
+ *               - code
+ *             properties:
+ *               email:
+ *                 type: string
+ *               code:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Code is valid
+ *       400:
+ *         description: Invalid or expired code
+ */
+router.post('/verify-reset-code', (req: Request, res: Response) => {
+  authController.verifyResetCode(req, res);
+});
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Reset password using verified code
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - code
  *               - newPassword
  *               - confirmPassword
  *             properties:
  *               email:
  *                 type: string
- *               token:
+ *               code:
  *                 type: string
  *               newPassword:
  *                 type: string
@@ -147,7 +177,7 @@ router.post('/forgot-password', (req: Request, res: Response) => {
  *       200:
  *         description: Password reset successful
  *       400:
- *         description: Invalid token or mismatch
+ *         description: Error or mismatch
  */
 router.post('/reset-password', resetPasswordValidation, handleValidation, (req: Request, res: Response) => {
   authController.resetPassword(req, res);

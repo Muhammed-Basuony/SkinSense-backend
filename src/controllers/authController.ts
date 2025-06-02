@@ -9,15 +9,10 @@ export class AuthController {
   async signup(req: Request, res: Response) {
     try {
       const result = await authService.signup(req.body);
-
-      
       const email = result.email;
-      if (!email) {
-        return res.status(500).json({ error: "Signup succeeded but email missing from result." });
-      }
+      if (!email) return res.status(500).json({ error: "Signup succeeded but email missing." });
 
       await addUserToDefaultGroups(email);
-
       logger.info(`New user signed up and assigned to groups: ${email}`);
       return res.status(201).json({ message: 'User created', result });
     } catch (error: any) {
@@ -37,33 +32,44 @@ export class AuthController {
     }
   }
 
-  async forgotPassword(req: Request, res: Response) {
+  async sendResetCode(req: Request, res: Response) {
     try {
       const { email } = req.body;
       if (!email) return res.status(400).json({ error: 'Email is required' });
 
-      const message = await authService.forgotPassword(email);
-      logger.info(`Password reset link sent to: ${email}`);
+      const message = await authService.sendResetCode(email);
+      logger.info(`Reset code sent to: ${email}`);
       return res.status(200).json({ message });
     } catch (error: any) {
-      logger.error(`Forgot Password Error: ${error.message}`);
+      logger.error(`Send Reset Code Error: ${error.message}`);
+      return res.status(400).json({ error: error.message });
+    }
+  }
+
+  async verifyResetCode(req: Request, res: Response) {
+    try {
+      const { email, code } = req.body;
+      if (!email || !code) return res.status(400).json({ error: 'Email and code are required' });
+
+      const valid = await authService.verifyResetCode(email, code);
+      return res.status(200).json({ message: 'Code is valid', valid });
+    } catch (error: any) {
+      logger.warn(`Code verification failed: ${error.message}`);
       return res.status(400).json({ error: error.message });
     }
   }
 
   async resetPassword(req: Request, res: Response) {
     try {
-      const { email, token, newPassword, confirmPassword } = req.body;
+      const { email, code, newPassword, confirmPassword } = req.body;
 
-      if (!email || !token || !newPassword || !confirmPassword) {
+      if (!email || !code || !newPassword || !confirmPassword)
         return res.status(400).json({ error: 'All fields are required' });
-      }
 
-      if (newPassword !== confirmPassword) {
+      if (newPassword !== confirmPassword)
         return res.status(400).json({ error: 'Passwords do not match' });
-      }
 
-      const result = await authService.resetPassword({ email, token, newPassword });
+      const result = await authService.resetPasswordWithCode({ email, code, newPassword });
       logger.info(`Password reset for user: ${email}`);
       return res.status(200).json({ message: 'Password reset successful', result });
     } catch (error: any) {
