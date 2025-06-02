@@ -37,12 +37,19 @@ export const addMessageToChat = async (
 ) => {
   const timestamp = new Date().toISOString();
 
- const message = {
-  groupId: { S: groupId.toString()},
-  timestamp: { S: timestamp.toString()},
-  senderId: { S: senderId.toString()},
-  content: { S: content.toString()},
-};
+  const message = {
+    groupId: groupId,  
+    'time stamp': timestamp,  
+    senderId: senderId,
+    content: content
+  };
+
+  await dynamo.send(
+    new PutItemCommand({
+      TableName: GROUP_MESSAGES_TABLE,
+      Item: marshall(message),
+    })
+  );
 
    console.log("📦 Message to insert into DynamoDB:", message);
   await dynamo.send(
@@ -55,15 +62,14 @@ export const addMessageToChat = async (
   return message;
 };
 
-
 export const getChatMessages = async (groupId: string) => {
   const result = await dynamo.send(
     new QueryCommand({
       TableName: GROUP_MESSAGES_TABLE,
       KeyConditionExpression: "groupId = :groupId",
-      ExpressionAttributeValues: {
-        ":groupId": { S: groupId },
-      },
+      ExpressionAttributeValues: marshall({
+        ":groupId": groupId
+      }),
       ScanIndexForward: true,
     })
   );
