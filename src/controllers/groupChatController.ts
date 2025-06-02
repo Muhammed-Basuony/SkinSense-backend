@@ -14,7 +14,7 @@ import { sendNotification } from '../utils/notificationUtils';
 export const createCustomGroupChat = async (req: AuthRequest, res: Response): Promise<void> => {
   const creatorEmail = req.user?.email; 
   const { name, memberIds } = req.body;
-
+  
   if (!creatorEmail || !name || !memberIds || !Array.isArray(memberIds)) {
     res.status(400).json({ error: 'Group name and memberIds are required.' });
     return;
@@ -47,20 +47,24 @@ export const createCustomGroupChat = async (req: AuthRequest, res: Response): Pr
 
 export const sendMessage = async (req: AuthRequest, res: Response): Promise<void> => {
   const senderEmail = req.user?.email;
+  const userId = req.user?.userId;
+
   const { groupId, text } = req.body;
 
-  if (!senderEmail || !groupId || !text) {
+  if (!senderEmail || !groupId || !userId || !text) {
     res.status(400).json({ error: 'groupId and text are required.' });
     return;
   }
 
   try {
-    const group = await getGroupById(groupId);
-    if (!group) throw new Error('Group not found');
+    // const group = await getGroupById(groupId);
+    // if (!group) throw new Error('Group not found');
+     const groups = await getUserGroups(userId); // Retrieves all groups
+     const group= groups.find(group => group.groupId === groupId) || null;
     
      
 
-
+    if (!group) throw new Error('Group not found');
     const message = await addMessageToChat(groupId, senderEmail, text);
     const recipients = group.members.filter((email: string) => email !== senderEmail);
 
