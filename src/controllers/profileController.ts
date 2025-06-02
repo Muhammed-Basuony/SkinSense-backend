@@ -49,7 +49,7 @@ export const updateProfilePhoto = async (req: AuthRequest, res: Response): Promi
     const email = req.user?.email;
     const file = req.file as S3File;
 
-    if (!email || !file) {
+    if (!email || !file || !file.location) {
       res.status(400).json({ error: "Missing email or photo" });
       return;
     }
@@ -63,6 +63,7 @@ export const updateProfilePhoto = async (req: AuthRequest, res: Response): Promi
       profile: updated,
     });
   } catch (err: any) {
+    console.error("Upload error:", err);
     res.status(500).json({ error: err.message || "Upload failed" });
   }
 };

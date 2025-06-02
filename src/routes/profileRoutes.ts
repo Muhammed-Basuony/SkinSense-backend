@@ -1,6 +1,10 @@
 import express from "express";
 import { authenticateToken } from "../middleware/authMiddleware";
-import { getProfile, updateProfile, updateProfilePhoto } from "../controllers/profileController";
+import {
+  getProfile,
+  updateProfile,
+  updateProfilePhoto,
+} from "../controllers/profileController";
 import { s3Uploader } from "../middleware/multerS3Config";
 
 const router = express.Router();
@@ -108,6 +112,11 @@ router.put("/", authenticateToken, updateProfile);
  *       500:
  *         description: Upload failed
  */
-router.post("/upload-photo", authenticateToken, s3Uploader.single("photo"), updateProfilePhoto);
+router.post(
+  "/upload-photo",
+  authenticateToken,
+  s3Uploader.single("photo"),
+  updateProfilePhoto
+);
 
 export default router;
