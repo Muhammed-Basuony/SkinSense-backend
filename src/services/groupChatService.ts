@@ -62,7 +62,7 @@ export const getChatMessages = async (groupId: string) => {
       TableName: GROUP_MESSAGES_TABLE,
       KeyConditionExpression: "groupId = :groupId",
       ExpressionAttributeValues: marshall({
-        ":groupId": { S: groupId }
+        ":groupId": groupId
       }, { removeUndefinedValues: true }),
       ConsistentRead: true,
     })

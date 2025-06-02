@@ -59,8 +59,8 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
   try {
     // const group = await getGroupById(groupId);
     // if (!group) throw new Error('Group not found');
-     const groups = await getUserGroups(senderEmail); // Retrieves all groups for the user
-                                                                                // Retrieves all groups
+     const groups = await getUserGroups(senderEmail); 
+                                                                               
      const group= groups.find(group => group.groupId === groupId) || null;
     
      
