@@ -1,8 +1,7 @@
 import express from "express";
 import { authenticateToken } from "../middleware/authMiddleware";
 import { getProfile, updateProfile, updateProfilePhoto } from "../controllers/profileController";
-import multer from "multer";
-import path from "path";
+import { s3Uploader } from "../middleware/multerS3Config";
 
 const router = express.Router();
 
@@ -12,22 +11,6 @@ const router = express.Router();
  *   name: User Profile
  *   description: User profile management
  */
-
-// ==========================
-// Multer config for photo upload
-// ==========================
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/profile_photos");
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const name = `photo-${Date.now()}${ext}`;
-    cb(null, name);
-  },
-});
-
-const upload = multer({ storage });
 
 /**
  * @swagger
@@ -92,7 +75,7 @@ router.put("/", authenticateToken, updateProfile);
  * @swagger
  * /api/profile/upload-photo:
  *   post:
- *     summary: Upload user profile photo
+ *     summary: Upload user profile photo to S3 and update profile
  *     tags: [User Profile]
  *     security:
  *       - bearerAuth: []
@@ -109,11 +92,22 @@ router.put("/", authenticateToken, updateProfile);
  *     responses:
  *       200:
  *         description: Photo uploaded and saved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Photo updated
+ *                 photoUrl:
+ *                   type: string
+ *                   example: https://bucket-name.s3.amazonaws.com/photo.jpg
  *       400:
- *         description: No photo uploaded
+ *         description: Missing email or photo
  *       500:
- *         description: Server error
+ *         description: Upload failed
  */
-router.post("/upload-photo", authenticateToken, upload.single("photo"), updateProfilePhoto);
+router.post("/upload-photo", authenticateToken, s3Uploader.single("photo"), updateProfilePhoto);
 
 export default router;

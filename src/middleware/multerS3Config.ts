@@ -19,11 +19,11 @@ const s3Uploader = multer({
     s3,
     bucket: process.env.AWS_S3_BUCKET!,
     acl: 'public-read',
-    metadata: (_req: Request, file: Express.Multer.File, cb: (error: any, metadata?: any) => void) => {
+    metadata: (_req: Request, file: Express.Multer.File, cb) => {
       cb(null, { fieldName: file.fieldname });
     },
-    key: (_req: Request, file: Express.Multer.File, cb: (error: any, key?: string) => void) => {
-      cb(null, `${Date.now()}-${file.originalname}`);
+    key: (_req: Request, file: Express.Multer.File, cb) => {
+      cb(null, `profile-photos/${Date.now()}-${file.originalname}`);
     },
   }),
   fileFilter: (_req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
