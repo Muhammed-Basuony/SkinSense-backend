@@ -70,7 +70,7 @@ export const sendMessage = async (req: AuthRequest, res: Response): Promise<void
     res.status(200).json({ message: 'Message sent', data: message });
   } catch (err) {
     console.error('Send message error:', err);
-    res.status(500).json({ error: 'Failed to send message.' });
+    res.status(500).json({ error: err });
   }
 };
 
