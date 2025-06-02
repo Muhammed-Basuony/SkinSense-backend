@@ -36,10 +36,10 @@ export const addMessageToChat = async (
   content: string
 ) => {
   const message = {
-    groupId,
-    'time stamp': new Date().toISOString(),
-    senderId,
-    content
+    'groupId': groupId,
+    'timestamp': new Date().toISOString(),
+    'senderId': senderId,
+    'content': content,
   };
 
   await dynamo.send(
