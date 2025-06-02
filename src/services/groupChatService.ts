@@ -37,13 +37,14 @@ export const addMessageToChat = async (
 ) => {
   const timestamp = new Date().toISOString();
 
-  const message = {
-    groupId,      
-    timestamp,    
-    senderId, 
-    content,
-  };
+ const message = {
+  groupId: groupId.toString(),
+  timestamp: timestamp.toString(),
+  senderId,
+  content,
+};
 
+   console.log("📦 Message to insert into DynamoDB:", message);
   await dynamo.send(
     new PutItemCommand({
       TableName: GROUP_MESSAGES_TABLE,

@@ -67,16 +67,17 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.sendMessage = sendMessage;
 const fetchMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { chatId } = req.params;
-    if (!chatId) {
-        res.status(400).json({ error: 'chatId required' });
+    const { groupId } = req.params;
+    if (!groupId) {
+        res.status(400).json({ error: 'groupId is required' });
         return;
     }
     try {
-        const messages = yield (0, groupChatService_1.getChatMessages)(chatId);
+        const messages = yield (0, groupChatService_1.getChatMessages)(groupId);
         res.status(200).json({ messages });
     }
     catch (err) {
+        console.error('Fetch messages error:', err);
         res.status(500).json({ error: 'Failed to fetch messages.' });
     }
 });

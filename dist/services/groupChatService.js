@@ -27,11 +27,12 @@ exports.createGroupChat = createGroupChat;
 const addMessageToChat = (groupId, senderId, content) => __awaiter(void 0, void 0, void 0, function* () {
     const timestamp = new Date().toISOString();
     const message = {
-        groupId,
-        timestamp,
+        groupId: groupId.toString(),
+        timestamp: timestamp.toString(),
         senderId,
         content,
     };
+    console.log("📦 Message to insert into DynamoDB:", message);
     yield dynamo.send(new client_dynamodb_1.PutItemCommand({
         TableName: GROUP_MESSAGES_TABLE,
         Item: (0, util_dynamodb_1.marshall)(message),

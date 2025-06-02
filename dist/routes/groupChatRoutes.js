@@ -38,7 +38,7 @@ const router = express_1.default.Router();
  *                 type: array
  *                 items:
  *                   type: string
- *                 example: ["user123", "user456"]
+ *                 example: ["user1@example.com", "user2@example.com"]
  *     responses:
  *       201:
  *         description: Group chat created
@@ -63,12 +63,12 @@ router.post("/create", authMiddleware_1.authenticateToken, groupChatController_1
  *           schema:
  *             type: object
  *             required:
- *               - chatId
+ *               - groupId
  *               - text
  *             properties:
- *               chatId:
+ *               groupId:
  *                 type: string
- *                 example: "group-123"
+ *                 example: "group-uuid-123"
  *               text:
  *                 type: string
  *                 example: "Hello group!"
@@ -77,22 +77,20 @@ router.post("/create", authMiddleware_1.authenticateToken, groupChatController_1
  *         description: Message sent successfully
  *       400:
  *         description: Bad request
- *       404:
- *         description: Group not found
  *       500:
  *         description: Server error
  */
 router.post("/send", authMiddleware_1.authenticateToken, groupChatController_1.sendMessage);
 /**
  * @swagger
- * /api/group-chat/messages/{chatId}:
+ * /api/group-chat/messages/{groupId}:
  *   get:
  *     summary: Fetch messages from a specific group chat
  *     tags: [Group Chat]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: chatId
+ *       - name: groupId
  *         in: path
  *         required: true
  *         schema:
@@ -102,11 +100,11 @@ router.post("/send", authMiddleware_1.authenticateToken, groupChatController_1.s
  *       200:
  *         description: List of messages
  *       400:
- *         description: Invalid chat ID
+ *         description: Invalid group ID
  *       500:
  *         description: Server error
  */
-router.get("/messages/:chatId", authMiddleware_1.authenticateToken, groupChatController_1.fetchMessages);
+router.get("/messages/:groupId", authMiddleware_1.authenticateToken, groupChatController_1.fetchMessages);
 /**
  * @swagger
  * /api/group-chat/my-groups:
