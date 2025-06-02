@@ -35,13 +35,11 @@ export const addMessageToChat = async (
   senderId: string,
   content: string
 ) => {
-  const timestamp = new Date().toISOString();
-
   const message = {
-    groupId: groupId,  
-    'time stamp': timestamp,  
-    senderId: senderId,
-    content: content
+    groupId,
+    'time stamp': new Date().toISOString(),
+    senderId,
+    content
   };
 
   await dynamo.send(
@@ -68,9 +66,9 @@ export const getChatMessages = async (groupId: string) => {
       TableName: GROUP_MESSAGES_TABLE,
       KeyConditionExpression: "groupId = :groupId",
       ExpressionAttributeValues: marshall({
-        ":groupId": groupId
-      }),
-      ScanIndexForward: true,
+        ":groupId": { S: groupId }
+      }, { removeUndefinedValues: true }),
+      ConsistentRead: true,
     })
   );
 
