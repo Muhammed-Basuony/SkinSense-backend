@@ -27,7 +27,7 @@ export const uploadBurnScan = async (req: AuthRequest, res: Response): Promise<v
   }
 
   try {
-    // Download image from S3
+    
     const imageStream = await axios.get(file.location, {
       responseType: "arraybuffer",
     });
@@ -38,19 +38,17 @@ export const uploadBurnScan = async (req: AuthRequest, res: Response): Promise<v
       contentType: file.mimetype,
     });
 
-    // Cast response data to the correct type
+    
     const result = await axios.post<BurnModelResponse>(HF_API_URL, form, {
       headers: form.getHeaders(),
     });
 
     const { label, confidence } = result.data;
 
-    const reply = `🔥 *Burn Degree:* ${label}\n📊 *Confidence:* ${confidence.toFixed(2)}%`;
+    const reply = ` *Burn Degree:* ${label}\n *Confidence:* ${confidence.toFixed(2)}%`;
 
-    // Save to ChatHistory table
     await saveChatToDynamoDB(userId, "[Burn Scan Image]", reply, file.location);
 
-    // Notify user
     await sendNotification(userId, "chat", "Burn scan result", reply);
 
     res.status(200).json({ message: "Scan successful", label, confidence, imageUrl: file.location });

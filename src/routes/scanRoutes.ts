@@ -1,7 +1,7 @@
 import express from "express";
 import { authenticateToken } from "../middleware/authMiddleware";
 import { uploadBurnScan } from "../controllers/scanController";
-import { s3Upload } from "../utils/s3";
+import { s3Uploader } from "../middleware/multerS3Config";
 
 const router = express.Router();
 
@@ -9,14 +9,14 @@ const router = express.Router();
  * @swagger
  * tags:
  *   name: Burn Scan
- *   description: Upload burn scan image and receive AI classification
+ *   description: Upload burn scan and receive model output
  */
 
 /**
  * @swagger
  * /api/scan/upload:
  *   post:
- *     summary: Upload a burn scan image and receive burn degree classification
+ *     summary: Upload a burn scan and receive burn degree classification
  *     tags: [Burn Scan]
  *     security:
  *       - bearerAuth: []
@@ -32,36 +32,32 @@ const router = express.Router();
  *               file:
  *                 type: string
  *                 format: binary
- *                 description: The image file of the burn to be scanned
  *     responses:
  *       200:
- *         description: Burn degree classified successfully
+ *         description: Burn scan analysis completed
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 message:
- *                   type: string
- *                   example: "Scan successful"
- *                 label:
- *                   type: string
- *                   example: "First Degree Burn"
- *                 confidence:
- *                   type: number
- *                   example: 94.52
  *                 imageUrl:
  *                   type: string
- *                   example: "https://your-s3-bucket.amazonaws.com/burn-scan.jpg"
+ *                   example: https://s3.amazonaws.com/scan.jpg
+ *                 label:
+ *                   type: string
+ *                   example: First Degree Burn
+ *                 confidence:
+ *                   type: number
+ *                   example: 91.52
  *       400:
- *         description: Missing user or file
+ *         description: Missing file or user ID
  *       500:
  *         description: Failed to analyze burn scan
  */
 router.post(
   "/upload",
   authenticateToken,
-  s3Upload.single("file"),
+  s3Uploader.single("file"), 
   uploadBurnScan
 );
 
