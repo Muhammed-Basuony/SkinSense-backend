@@ -9,14 +9,14 @@ const router = express.Router();
  * @swagger
  * tags:
  *   name: Chatbot
- *   description: Interact with the SkinSense chatbot
+ *   description: Interact with SkinSense Chatbot or Burn Scan AI
  */
 
 /**
  * @swagger
  * /api/chatbot/chat:
  *   post:
- *     summary: Send a message or image to the chatbot
+ *     summary: Send a text message and/or image to the chatbot or burn model
  *     tags: [Chatbot]
  *     security:
  *       - bearerAuth: []
@@ -26,17 +26,16 @@ const router = express.Router();
  *         multipart/form-data:
  *           schema:
  *             type: object
- *             required: []
  *             properties:
  *               message:
  *                 type: string
- *                 example: "What should I do for dry skin?"
+ *                 example: "What cream should I use for burns?"
  *               image:
  *                 type: string
  *                 format: binary
  *     responses:
  *       200:
- *         description: Chatbot replied successfully
+ *         description: Chatbot or model reply
  *         content:
  *           application/json:
  *             schema:
@@ -44,10 +43,8 @@ const router = express.Router();
  *               properties:
  *                 reply:
  *                   type: string
- *                   example: "Use a gentle moisturizer twice a day."
  *                 imageUrl:
  *                   type: string
- *                   example: "https://your-s3-bucket-url.amazonaws.com/chatbot-images/image123.png"
  *       400:
  *         description: Input missing
  *       401:
@@ -68,39 +65,17 @@ router.post(
  * @swagger
  * /api/chatbot/history:
  *   get:
- *     summary: Retrieve chatbot conversation history
+ *     summary: Retrieve user chatbot history
  *     tags: [Chatbot]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of previous chatbot messages
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 history:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       userId:
- *                         type: string
- *                       question:
- *                         type: string
- *                       reply:
- *                         type: string
- *                       imageUrl:
- *                         type: string
- *                         example: "https://your-s3-bucket-url.amazonaws.com/chatbot-images/abc.jpg"
- *                       timestamp:
- *                         type: string
- *                         format: date-time
+ *         description: Array of messages and replies
  *       401:
  *         description: Unauthorized
  *       500:
- *         description: Failed to retrieve chat history
+ *         description: Error fetching history
  */
 router.get("/history", authenticateToken, async (req: AuthRequest, res: Response) => {
   await getChatHistory(req, res);

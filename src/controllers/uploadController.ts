@@ -15,7 +15,6 @@ export const uploadProfilePic = async (req: AuthRequest, res: Response): Promise
     }
 
     const photoUrl = file.location;
-    
     res.status(200).json({ message: "Profile picture uploaded", photoUrl });
   } catch (err: any) {
     res.status(500).json({ error: err.message || "Failed to upload profile picture" });
@@ -32,7 +31,6 @@ export const uploadSkinScan = async (req: AuthRequest, res: Response): Promise<v
     }
 
     const scanUrls = files.map(f => f.location);
-    
     res.status(200).json({ message: "Scans uploaded", scanUrls });
   } catch (err: any) {
     res.status(500).json({ error: err.message || "Failed to upload scans" });
