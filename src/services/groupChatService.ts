@@ -7,6 +7,7 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { v4 as uuidv4 } from "uuid";
+import logger from "../utils/logger";
 
 const dynamo = new DynamoDBClient({ region: "eu-north-1" });
 
@@ -41,7 +42,7 @@ export const addMessageToChat = async (
     senderId: { S: senderId},
     content: { S: content},
   };
-   console.log("📦 Message to insert into DynamoDB:", message);
+   logger.info("📦 Message to insert into DynamoDB:", message);
 
   await dynamo.send(
     new PutItemCommand({
