@@ -9,10 +9,16 @@ export class AuthController {
   async signup(req: Request, res: Response) {
     try {
       const result = await authService.signup(req.body);
-      const userId = result.userId || result.email;
-      await addUserToDefaultGroups(userId);
 
-      logger.info(`New user signed up: ${userId}`);
+      
+      const email = result.email;
+      if (!email) {
+        return res.status(500).json({ error: "Signup succeeded but email missing from result." });
+      }
+
+      await addUserToDefaultGroups(email);
+
+      logger.info(`New user signed up and assigned to groups: ${email}`);
       return res.status(201).json({ message: 'User created', result });
     } catch (error: any) {
       logger.error(`Signup Error: ${error.message}`);
