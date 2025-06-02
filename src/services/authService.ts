@@ -1,6 +1,7 @@
 import {
   DynamoDBClient,
   PutItemCommand,
+  QueryCommand,
   GetItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import bcrypt from "bcryptjs";
@@ -181,29 +182,37 @@ export class AuthService {
   }
 
   private async getUserByEmail(email: string): Promise<User | null> {
-    const command = new GetItemCommand({
+    const command = new QueryCommand({
       TableName: USERS_TABLE,
-      Key: { email: { S: email } },
+      IndexName: "email-index", // ⚠️ You must create this GSI
+      KeyConditionExpression: "email = :email",
+      ExpressionAttributeValues: {
+        ":email": { S: email },
+      },
+      Limit: 1,
     });
 
     const result = await dynamo.send(command);
-    if (!result.Item) return null;
+    if (!result.Items || result.Items.length === 0) return null;
+
+    const item = result.Items[0];
 
     return {
-      userId: result.Item.userId.S!,
-      name: result.Item.name.S!,
-      email: result.Item.email.S!,
-      password: result.Item.password.S!,
-      createdAt: result.Item.createdAt.S!,
-      age: result.Item.age?.N ? parseInt(result.Item.age.N) : null,
-      gender: result.Item.gender?.S ?? null,
-      bloodType: result.Item.bloodType?.S ?? null,
-      phone: result.Item.phone?.S ?? null,
-      photoUrl: result.Item.photoUrl?.S ?? null,
-      location: result.Item.location?.S
-        ? JSON.parse(result.Item.location.S)
+      userId: item.userId.S!,
+      name: item.name.S!,
+      email: item.email.S!,
+      password: item.password.S!,
+      createdAt: item.createdAt.S!,
+      age: item.age?.N ? parseInt(item.age.N) : null,
+      gender: item.gender?.S ?? null,
+      bloodType: item.bloodType?.S ?? null,
+      phone: item.phone?.S ?? null,
+      photoUrl: item.photoUrl?.S ?? null,
+      location: item.location?.S
+        ? JSON.parse(item.location.S)
         : { latitude: null, longitude: null, address: null },
     };
   }
 }
+
 
