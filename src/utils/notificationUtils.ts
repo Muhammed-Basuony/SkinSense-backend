@@ -9,7 +9,7 @@ const NOTIFICATIONS_TABLE = "SkinSenseNotifications";
  */
 export const sendNotification = async (
   userId: string,
-  type: "chat" | "article" | "update",
+  type: "chat" | "article" | "update" | "scan",
   title: string,
   message: string
 ): Promise<void> => {

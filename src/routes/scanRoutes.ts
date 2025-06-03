@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateToken } from "../middleware/authMiddleware";
-import { uploadBurnScan } from "../controllers/scanController";
+import { scanBurnImage } from "../controllers/scanController";
 import { s3Uploader } from "../middleware/multerS3Config";
 
 const router = express.Router();
@@ -58,7 +58,7 @@ router.post(
   "/upload",
   authenticateToken,
   s3Uploader.single("file"), 
-  uploadBurnScan
+  scanBurnImage
 );
 
 export default router;

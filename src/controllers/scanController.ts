@@ -1,60 +1,61 @@
 import { Request, Response } from "express";
-import axios from "axios";
-import FormData from "form-data";
 import { AuthRequest } from "../middleware/authMiddleware";
 import { sendNotification } from "../utils/notificationUtils";
 import { saveChatToDynamoDB } from "../utils/dynamoUtils";
-
-const HF_API_URL = "https://mohmadessam-1-burn-classification.hf.space/predict";
+import axios from "axios";
+import FormData from "form-data";
 
 interface S3File extends Express.Multer.File {
   location: string;
   mimetype: string;
 }
 
-interface BurnModelResponse {
-  label: string;
-  confidence: number;
-}
-
-export const uploadBurnScan = async (req: AuthRequest, res: Response): Promise<void> => {
+export const scanBurnImage = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
   const userId = req.user?.userId;
-  const file = req.file as S3File;
+  const image = req.file as S3File;
 
-  if (!userId || !file) {
-    res.status(400).json({ error: "Missing user or file" });
+  if (!userId || !image || !image.location) {
+    res.status(400).json({ error: "User or image is missing" });
     return;
   }
 
   try {
-    
-    const imageStream = await axios.get(file.location, {
+    const form = new FormData();
+
+    // Download image from S3 to buffer
+    const imageResponse = await axios.get<ArrayBuffer>(image.location, {
       responseType: "arraybuffer",
     });
 
-    const form = new FormData();
-    form.append("file", Buffer.from(imageStream.data as ArrayBuffer), {
+    form.append("file", Buffer.from(imageResponse.data), {
       filename: "burn_scan.jpg",
-      contentType: file.mimetype,
+      contentType: image.mimetype,
     });
 
-    
-    const result = await axios.post<BurnModelResponse>(HF_API_URL, form, {
+    const result = await axios.post("https://mohmadessam-1-burn-classification.hf.space/predict", form, {
       headers: form.getHeaders(),
     });
 
-    const { label, confidence } = result.data;
+    const label = (result.data as any).class_name;
+    const confidence = (result.data as any).confidence;
 
-    const reply = ` *Burn Degree:* ${label}\n *Confidence:* ${confidence.toFixed(2)}%`;
+    const reply = `🔥 *Burn Degree:* ${label}\n📊 *Confidence:* ${confidence.toFixed(2)}%`;
 
-    await saveChatToDynamoDB(userId, "[Burn Scan Image]", reply, file.location);
+    await saveChatToDynamoDB(userId, "[Burn Scan]", reply, image.location);
 
-    await sendNotification(userId, "chat", "Burn scan result", reply);
+    await sendNotification(
+      userId,
+      "scan",
+      "Burn scan result ready",
+      reply
+    );
 
-    res.status(200).json({ message: "Scan successful", label, confidence, imageUrl: file.location });
-  } catch (error: any) {
-    console.error("Scan error:", error?.message || error);
-    res.status(500).json({ error: "Failed to analyze burn scan" });
+    res.status(200).json({ message: "Scan complete", label, confidence, imageUrl: image.location });
+  } catch (err: any) {
+    console.error("Scan error:", err.message);
+    res.status(500).json({ error: "Burn scan failed" });
   }
 };
-
