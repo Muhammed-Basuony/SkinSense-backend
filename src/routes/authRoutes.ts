@@ -241,7 +241,7 @@ router.post('/verify-reset-code', (req: Request, res: Response) => {
  * @swagger
  * /api/auth/reset-password:
  *   post:
- *     summary: Reset password using verified code
+ *     summary: Reset password after code verification
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -251,13 +251,10 @@ router.post('/verify-reset-code', (req: Request, res: Response) => {
  *             type: object
  *             required:
  *               - email
- *               - code
  *               - newPassword
  *               - confirmPassword
  *             properties:
  *               email:
- *                 type: string
- *               code:
  *                 type: string
  *               newPassword:
  *                 type: string
@@ -269,6 +266,7 @@ router.post('/verify-reset-code', (req: Request, res: Response) => {
  *       400:
  *         description: Error or mismatch
  */
+
 router.post('/reset-password', resetPasswordValidation, handleValidation, (req: Request, res: Response) => {
   authController.resetPassword(req, res);
 });

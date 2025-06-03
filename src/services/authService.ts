@@ -114,7 +114,7 @@ export class AuthService {
     if (!user) throw new Error("User not found");
 
     const code = Math.floor(1000 + Math.random() * 9000).toString();
-    const expiration = Math.floor(Date.now() / 1000) + 300; // 5 minutes
+    const expiration = Math.floor(Date.now() / 1000) + 300;
 
     const command = new PutItemCommand({
       TableName: CODES_TABLE,
@@ -152,42 +152,38 @@ export class AuthService {
     return true;
   }
 
-  async resetPasswordWithCode(data: { email: string; code: string; newPassword: string }) {
-    const { email, code, newPassword } = data;
+  async resetPassword(email: string, newPassword: string) {
+  const user = await this.getUserByEmail(email);
+  if (!user) throw new Error("User not found");
 
-    const valid = await this.verifyResetCode(email, code);
-    if (!valid) throw new Error("Invalid code");
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    const user = await this.getUserByEmail(email);
-    if (!user) throw new Error("User not found");
+  const command = new PutItemCommand({
+    TableName: USERS_TABLE,
+    Item: {
+      userId: { S: user.userId },
+      name: { S: user.name },
+      email: { S: user.email },
+      password: { S: hashedPassword },
+      createdAt: { S: user.createdAt },
+      age: user.age ? { N: user.age.toString() } : { NULL: true },
+      gender: user.gender ? { S: user.gender } : { NULL: true },
+      bloodType: user.bloodType ? { S: user.bloodType } : { NULL: true },
+      phone: user.phone ? { S: user.phone } : { NULL: true },
+      photoUrl: user.photoUrl ? { S: user.photoUrl } : { NULL: true },
+      location: user.location ? { S: JSON.stringify(user.location) } : { NULL: true },
+    },
+  });
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+  await dynamo.send(command);
+  return { userId: user.userId, email: user.email };
+}
 
-    const command = new PutItemCommand({
-      TableName: USERS_TABLE,
-      Item: {
-        userId: { S: user.userId },
-        name: { S: user.name },
-        email: { S: user.email },
-        password: { S: hashedPassword },
-        createdAt: { S: user.createdAt },
-        age: user.age ? { N: user.age.toString() } : { NULL: true },
-        gender: user.gender ? { S: user.gender } : { NULL: true },
-        bloodType: user.bloodType ? { S: user.bloodType } : { NULL: true },
-        phone: user.phone ? { S: user.phone } : { NULL: true },
-        photoUrl: user.photoUrl ? { S: user.photoUrl } : { NULL: true },
-        location: user.location ? { S: JSON.stringify(user.location) } : { NULL: true },
-      },
-    });
-
-    await dynamo.send(command);
-    return { userId: user.userId, email: user.email };
-  }
 
   private async getUserByEmail(email: string): Promise<User | null> {
     const command = new QueryCommand({
       TableName: USERS_TABLE,
-      IndexName: "email-index", // ✅ uses the GSI correctly
+      IndexName: "email-index", 
       KeyConditionExpression: "email = :email",
       ExpressionAttributeValues: {
         ":email": { S: email },

@@ -61,15 +61,15 @@ export class AuthController {
 
   async resetPassword(req: Request, res: Response) {
     try {
-      const { email, code, newPassword, confirmPassword } = req.body;
+      const { email, newPassword, confirmPassword } = req.body;
 
-      if (!email || !code || !newPassword || !confirmPassword)
+      if (!email || !newPassword || !confirmPassword)
         return res.status(400).json({ error: 'All fields are required' });
 
       if (newPassword !== confirmPassword)
         return res.status(400).json({ error: 'Passwords do not match' });
 
-      const result = await authService.resetPasswordWithCode({ email, code, newPassword });
+      const result = await authService.resetPassword(email, newPassword);
       logger.info(`Password reset for user: ${email}`);
       return res.status(200).json({ message: 'Password reset successful', result });
     } catch (error: any) {
@@ -78,3 +78,4 @@ export class AuthController {
     }
   }
 }
+
