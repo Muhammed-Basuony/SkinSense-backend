@@ -10,7 +10,7 @@ import groupChatRoutes from './routes/groupChatRoutes';
 import doctorRoutes from './routes/doctorRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import { setupSwagger } from './swagger';
-import scanRoutes from "./routes/scanRoutes";
+
 
 
 dotenv.config();
@@ -33,7 +33,7 @@ app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/notifications", notificationRoutes);
-app.use("/api/scan", scanRoutes);
+
 
 
 
